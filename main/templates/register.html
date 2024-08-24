@@ -1,0 +1,13 @@
+{{ define "register" }}
+
+{{ template "header" }}
+
+    <form action="/reg_user/" method="post">
+        <input type="text" name="username" id="username" placeholder="ваше имя">
+        <input type="text" name="password" id="password" placeholder="ваш пароль">
+        <button>Зарегистрироваться</button>
+    </form>
+
+{{ template "footer" }}
+
+{{ end }}
