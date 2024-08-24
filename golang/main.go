@@ -1,48 +1,50 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
-	"html/template"
-	"net/http"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type User struct {
-	Name                  string
-	Age                   uint16
-	Money                 int16
-	Avg_grades, Happiness float64
-	Hobbies               []string
-}
-
-func (u *User) getAllInfo() string {
-	return fmt.Sprintf("User name is: %s. He is %d. And he has %d money", u.Name, u.Age, u.Money)
-}
-
-func (u *User) setNewName(newName string) {
-	u.Name = newName
-}
-
-func home_page(w http.ResponseWriter, r *http.Request) {
-	bob := User{Name: "Bob", Age: 25, Money: -50, Avg_grades: 4.2, Happiness: 0.8, Hobbies: []string{"Football", "Skate", "Dance"}}
-	// bob.setNewName("Alex")
-	// // fmt.Fprintf(w, bob.getAllInfo())
-	// fmt.Fprintf(w, `<h1>Main Text<h1>`)
-	// fmt.Fprintf(w, `<h1>Main yesy<h1>`)
-	tmpl, _ := template.ParseFiles("templates/home_page.html")
-	tmpl.Execute(w, bob)
-}
-
-func create_page(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Create Page")
-}
-
-func handleRequest() {
-	http.HandleFunc("/", home_page)
-	http.HandleFunc("/create/", create_page)
-	http.ListenAndServe(":8080", nil)
+	Name string `json:"name"`
+	Age  uint16 `json:"age"`
 }
 
 func main() {
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	if err != nil {
+		panic(err)
+	}
 
-	handleRequest()
+	defer db.Close()
+
+	insert, err := db.Query("INSERT INTO `users` (`name`, `age`) VALUES ('voowooo', 23)")
+	if err != nil {
+		panic(err)
+	}
+	defer insert.Close()
+
+	// user, err := db.Query("DELETE FROM `users` WHERE `id` = 2")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer user.Close()
+
+	res, err := db.Query("SELECT `name`, `age` FROM `users`")
+	if err != nil {
+		panic(err)
+	}
+
+	for res.Next() {
+		var user User
+		err = res.Scan(&user.Name, &user.Age)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println(fmt.Sprintf("User: %s with age %d", user.Name, user.Age))
+	}
+
 }
