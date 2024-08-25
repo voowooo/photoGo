@@ -1,0 +1,19 @@
+{{ define "login" }}
+
+{{ template "header" }}
+
+    <div class="signin">
+        <h1 id="helloText">Привет</h1>
+
+        <form action="/log_user/" method="get" class="signin-form">
+            <h2>Здравствуй....?</h2>
+            <input type="text" name="username" id="username" placeholder="Ваше Имя" class="signin-form-input" onchange="HelloTextChange()">
+            <h2>Введите ваш пароль</h2>
+            <input type="password" name="password" id="password" placeholder="Ваш пароль" class="signin-form-input">
+            <button class="signin-form-button">Войти</button>
+        </form>
+    </div>
+    
+{{ template "footer" }}
+
+{{ end }}

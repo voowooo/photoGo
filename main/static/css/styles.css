@@ -43,10 +43,25 @@ h2{
     cursor: default;
 }
 
+.header-menu{
+    display: flex;
+}
+
+.header-menu-element{
+    margin: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-menu-text{
+    cursor: pointer;
+}
+
 .header-menu-icon{
     width: 50px;
     filter: invert(1);
-    margin: 10px;
 }
 
 .signin{

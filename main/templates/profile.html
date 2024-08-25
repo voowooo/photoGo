@@ -1,0 +1,18 @@
+{{ define "profile" }}
+
+{{ template "header" }}
+
+<div class="profile">
+    <h1>Профиль пользователя {{ .Username }}</h1>
+
+    {{ if .HasEditRights }}
+    <p>У вас есть права на изменение этого профиля.</p>
+    <button>Редактировать профиль</button>
+    {{ else }}
+    <p>У вас нет прав на изменение этого профиля.</p>
+    {{ end }}
+</div>
+
+{{ template "footer" }}
+
+{{ end }}
