@@ -6,8 +6,19 @@ import (
 	"net/http"
 	"text/template"
 
+	"github.com/gorilla/mux"
+
 	_ "github.com/go-sql-driver/mysql"
 )
+
+type Profile struct {
+	Id                         uint16
+	Username, Password, Photos string
+}
+
+var users = []Profile{}
+
+// var showUser = Profile{}
 
 func index(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("templates/index.html", "templates/header.html", "templates/footer.html")
@@ -16,7 +27,33 @@ func index(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, err.Error())
 	}
 
-	t.ExecuteTemplate(w, "index", nil)
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	if err != nil {
+		panic(err)
+	}
+
+	defer db.Close()
+
+	res, err := db.Query("SELECT * FROM `all_users`")
+	if err != nil {
+		panic(err)
+	}
+
+	users = []Profile{}
+	for res.Next() {
+		var user Profile
+		err = res.Scan(&user.Id, &user.Username, &user.Password, &user.Photos)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println(fmt.Sprintf("User: %s ID = %d Pass = %s, Photos = %s", user.Username, user.Id, user.Password, user.Photos))
+
+		users = append(users, user)
+
+	}
+
+	t.ExecuteTemplate(w, "index", users)
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
@@ -56,7 +93,7 @@ func reg_user(w http.ResponseWriter, r *http.Request) {
 
 	defer db.Close()
 
-	insert, err := db.Query(fmt.Sprintf("INSERT INTO `all_users` (`name`, `password`) VALUES ('%s', '%s')", username, password))
+	insert, err := db.Query(fmt.Sprintf("INSERT INTO `all_users` (`name`, `password`, `photos`) VALUES ('%s', '%s', '0')", username, password))
 	if err != nil {
 		panic(err)
 	}
@@ -65,76 +102,33 @@ func reg_user(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func log_user(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-
-	username := r.FormValue("username")
-	password := r.FormValue("password")
+func user_profile(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "ID: %v\n", vars["user_id"])
 
 	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
 	if err != nil {
 		panic(err)
 	}
+
 	defer db.Close()
-
-	var dbPassword string
-
-	err = db.QueryRow("SELECT `password` FROM `all_users` WHERE `name` = ?", username).Scan(&dbPassword)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			// Пользователь не найден
-			http.Redirect(w, r, "/login/", http.StatusSeeOther)
-			return
-		} else {
-			panic(err)
-		}
-	}
-
-	if password == dbPassword {
-		// Пароль верен, перенаправляем на страницу профиля
-		http.Redirect(w, r, "/profile/"+username, http.StatusSeeOther)
-	} else {
-		// Пароль неверен
-		http.Redirect(w, r, "/login/", http.StatusSeeOther)
-	}
-}
-
-func profile(w http.ResponseWriter, r *http.Request) {
-	// Получаем имя пользователя из URL
-	requestedUsername := r.URL.Path[len("/profile/"):]
-
-	// Здесь можно добавить проверку сессии, чтобы получить текущего пользователя
-	// Для простоты предположим, что у нас есть переменная currentUser,
-	// которая содержит имя текущего аутентифицированного пользователя.
-	currentUser := "текущий_пользователь" // Это нужно заменить на реальную проверку сессии
-
-	t, err := template.ParseFiles("templates/profile.html", "templates/header.html", "templates/footer.html")
-	if err != nil {
-		fmt.Fprintf(w, err.Error())
-	}
-
-	// Проверяем, имеет ли текущий пользователь права на изменение данных
-	hasEditRights := currentUser == requestedUsername
-
-	data := struct {
-		Username      string
-		HasEditRights bool
-	}{
-		Username:      requestedUsername,
-		HasEditRights: hasEditRights,
-	}
-
-	t.ExecuteTemplate(w, "profile", data)
 }
 
 func handleFunc() {
+
+	rtr := mux.NewRouter()
+
+	rtr.HandleFunc("/", index).Methods("GET")
+	rtr.HandleFunc("/register", register).Methods("GET")
+	rtr.HandleFunc("/login", login).Methods("GET")
+	rtr.HandleFunc("/reg_user", reg_user).Methods("POST")
+	rtr.HandleFunc("/profile/{user_id:[0-9]+}", user_profile).Methods("GET")
+
+	http.Handle("/", rtr)
+
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
-	http.HandleFunc("/", index)
-	http.HandleFunc("/register/", register)
-	http.HandleFunc("/login/", login)
-	http.HandleFunc("/reg_user/", reg_user)
-	http.HandleFunc("/log_user/", log_user)
-	http.HandleFunc("/profile/", profile)
+
 	http.ListenAndServe(":8080", nil)
 }
 

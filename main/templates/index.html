@@ -2,7 +2,19 @@
 
 {{ template "header" }}
 
-    <h1>Hello, world!</h1>
+    <!-- <h1>Hello, world!</h1> -->
+
+    {{ range . }}
+        <div class="user">
+            <h1>{{ .Username }}</h1>
+            <!-- <h2>{{ .Password }}</h2> -->
+            <h2>Id = {{ .Id }}</h2>
+            <h3>Photos: {{ .Photos }}</h3>
+            <a href="/profile/{{ .Id }}" class="user-button">перейти на страницу пользователя</a>
+        </div>
+    {{ else }}
+        <h1>пользователей не найдено</h1>
+    {{ end }}
 
 {{ template "footer" }}
 
