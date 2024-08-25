@@ -35,8 +35,70 @@ a{
     text-decoration: none;
 }
 
+h1{
+    cursor: default;
+}
+
+h2{
+    cursor: default;
+}
+
 .header-menu-icon{
     width: 50px;
     filter: invert(1);
     margin: 10px;
+}
+
+.signin{
+    display: flex;
+    flex-flow: column;
+    align-self: center;
+    width: 30%;
+    align-items: center;
+}
+
+.signin-form{
+    display: flex;
+    /* align-self: center; */
+    align-items: center;
+    flex-flow: column;
+    border: 3px solid white;
+    border-radius: 30px;
+    width: 100%;
+    padding: 40px;
+
+}
+
+.signin-form-input{
+    width: 90%;
+    background-color: rgba(255, 255, 255, 0);
+    color: white;
+    border: 0;
+    text-align: center;
+    height: 30px;
+    font-size: 20px;
+    padding: 5px;
+    border-radius: 15px;
+    transition: 0.3s;
+    margin: 10px;
+}
+
+.signin-form-input:focus{
+    border-radius: 30px;
+    background-color: rgba(255, 255, 255, 0.643);
+}
+
+.signin-form-button{
+    margin: 20px 20px 0px;
+    background-color: white;
+    padding: 10px;
+    font-size: 20px;
+    border-radius: 15px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.signin-form-button:hover{
+    background-color: rgb(103, 103, 103);
+    color: white;
 }

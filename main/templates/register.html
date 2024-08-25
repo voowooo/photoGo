@@ -2,12 +2,18 @@
 
 {{ template "header" }}
 
-    <form action="/reg_user/" method="post">
-        <input type="text" name="username" id="username" placeholder="ваше имя">
-        <input type="text" name="password" id="password" placeholder="ваш пароль">
-        <button>Зарегистрироваться</button>
-    </form>
+    <div class="signin">
+        <h1 id="helloText">Привет</h1>
 
+        <form action="/reg_user/" method="post" class="signin-form">
+            <h2>Как вас звать?</h2>
+            <input type="text" name="username" id="username" placeholder="Ваше Имя" class="signin-form-input" onchange="HelloTextChange()">
+            <h2>Создайте пароль</h2>
+            <input type="password" name="password" id="password" placeholder="Ваш пароль" class="signin-form-input">
+            <button class="signin-form-button">Зарегистрироваться</button>
+        </form>
+    </div>
+    
 {{ template "footer" }}
 
 {{ end }}
