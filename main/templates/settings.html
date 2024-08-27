@@ -1,0 +1,21 @@
+{{ define "settings" }}
+
+{{ template "header" . }}
+
+    {{ if .IsOwner }}
+        <h1>Settings of {{ .Username }}</h1>
+        <h2>Ваш пароль: {{ .Password }}</h2>
+        <h2>Id = {{ .Id }}</h2>
+        <h3>Photos: {{ .Photos }}</h3>
+        <form action="change_desc" method="post">
+            <input type="text" name="description" id="description" placeholder="Описание профиля" class="signin-form-input">
+            <button class="signin-form-button">изменить</button>
+        </form>
+        <a href="/" class="user-button">На главную</a>
+        <a href="/logout" class="user-button">Выйти</a>
+    {{ else }}
+        <h1>ДОСТУП ОГРАНИЧЕН</h1>
+    {{ end }}
+{{ template "footer" }}
+
+{{ end }}

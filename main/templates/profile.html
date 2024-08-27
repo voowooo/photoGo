@@ -1,17 +1,48 @@
 {{ define "profile" }}
 
-{{ template "header" }}
+{{ template "header" . }}
 
-<div class="profile">
-    <h1>Профиль пользователя {{ .Username }}</h1>
+    <!-- <h1>{{ .Username }}</h1>
 
-    {{ if .HasEditRights }}
-    <p>У вас есть права на изменение этого профиля.</p>
-    <button>Редактировать профиль</button>
+    {{ if .IsOwner }}
+        <h2>Ваш пароль: {{ .Password }}</h2>
     {{ else }}
-    <p>У вас нет прав на изменение этого профиля.</p>
+        <h2>Пароль: скрыт</h2>
     {{ end }}
-</div>
+
+    <h2>Id = {{ .Id }}</h2>
+    <h3>Photos: {{ .Photos }}</h3>
+    <a href="/" class="user-button">На главную</a>
+
+    {{ if .IsOwner }}
+        <a href="/logout" class="user-button">Выйти</a>
+    {{ end }} -->
+
+    <div class="profile">
+        <div class="profile-line">
+            <img src="../static/icons/profile_page-icon.png" alt="profile_page-icon" class="profile_page-icon">
+            <div class="profile-block">
+                <h1>{{ .Username }}</h1>
+                <div class="profile-line profile-info">
+                    <h2>ID: {{ .Id }}</h2>
+                    <h2 style="margin-left: 20px;">Фото: {{ .Photos }}</h2>
+                </div>
+                <h2 class="profile-block-description">О себе:</h2>
+                <h3 class="profile-block-description-text">{{ .Description}} </h3>
+            </div>
+        </div>
+        {{ if .IsOwner }}
+                <div class="profile-roots">
+                    <a href="#">
+                        <img src="../static/icons/create_photo-icon.png" alt="create_photo" class="profile-roots-icon">
+                    </a>
+                    <a href="/logout" class="profile-roots-button">Выйти</a>
+                    <a href="{{ .Id }}/settings">
+                        <img src="../static/icons/user_settings-icon.png" alt="settings" class="profile-roots-icon">
+                    </a>
+                </div>
+        {{ end }}
+    </div>
 
 {{ template "footer" }}
 

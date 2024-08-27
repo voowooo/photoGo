@@ -147,3 +147,71 @@ h2{
 .user-button:hover{
     background-color: rgb(143, 127, 127);
 }
+
+.profile {
+    display: flex;
+    flex-flow: column;
+    align-self: center;
+}
+
+.profile-line{
+    display: flex;
+}
+
+.profile_page-icon{
+    width: 250px;
+    margin-right: 50px;
+    filter: invert(1);
+}
+
+.profile-block{
+    max-width: 450px;
+    word-wrap: break-word;
+    word-break: break-all; /* более приоритетно */
+}
+
+.profile-block-description{
+    margin-top: 20px;
+}
+
+.profile-block-description-text{
+    font-weight: 400;
+}
+
+.profile-info {
+    margin-top: 10px;
+}
+
+.profile-roots{
+    padding: 0px 100px 0px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 50px;
+    border-radius: 40px;
+    height: 70px;
+    background-color: rgb(169, 149, 149);
+
+}
+
+.profile-roots-icon{
+    width: 50px;
+    filter: invert(1);
+    transition: 0.3s;
+}
+
+.profile-roots-icon:hover{
+    width: 60px;
+}
+
+.profile-roots-button{
+    font-size: 20px;
+    background-color: rgb(255, 161, 161);
+    padding: 10px;
+    border-radius: 15px;
+    transition: 0.3s;
+}
+
+.profile-roots-button:hover{
+    font-size: 25px;
+}

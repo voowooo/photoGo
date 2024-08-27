@@ -1,35 +1,40 @@
 {{ define "header" }}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
     <header>
-        <a href="#">
+        <a href="/">
             <h1 class="header-menu-text">PhotoGo</h1>
         </a>
         <div class="header-menu" id="header-menu">
             <a href="/" class="header-menu-element">
-                <img src="../static/icons/home_page-icon.png" alt="home" class="header-menu-icon">
+                <img src="/static/icons/home_page-icon.png" alt="home" class="header-menu-icon">
             </a>
             <a href="/search" class="header-menu-element">
-                <img src="../static/icons/search_page-icon.png" alt="search" class="header-menu-icon">
+                <img src="/static/icons/search_page-icon.png" alt="search" class="header-menu-icon">
             </a>
-            <a href="/login" class="header-menu-element">
-                <h1 class="header-menu-text">Войти</h1>
-            </a>
-            <a href="/register" class="header-menu-element">
-                <h1 class="header-menu-text">Зарегистрироваться</h1>
-            </a>
-            <a href="/profile" class="header-menu-element"> 
-                <img src="../static/icons/profile_page-icon.png" alt="profile" class="header-menu-icon">
-            </a>
+            
+            {{ if not .LoggedUserId }}
+                <a href="/login" class="header-menu-element">
+                    <h1 class="header-menu-text">Войти</h1>
+                </a>
+                <a href="/register" class="header-menu-element">
+                    <h1 class="header-menu-text">Зарегистрироваться</h1>
+                </a>
+            {{ end }}
+
+            {{ if .LoggedUserId }}
+                <a href="/profile/{{ .LoggedUserId }}" class="header-menu-element"> 
+                    <img src="/static/icons/profile_page-icon.png" alt="profile" class="header-menu-icon">
+                </a>
+            {{ end }}
         </div>
     </header>
-
+    <script src="/static/js/script.js"></script>
 {{ end }}
