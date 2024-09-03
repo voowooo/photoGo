@@ -3,7 +3,9 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"io"
 	"net/http"
+	"strings"
 	"text/template"
 
 	"github.com/gorilla/mux"
@@ -176,16 +178,27 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	photoIDs := strings.Split(user.Photos, ",")
+	var photoURLs []string
+	for _, id := range photoIDs {
+		id = strings.TrimSpace(id)
+		if id != "0" && id != "" {
+			photoURLs = append(photoURLs, "/photo/"+id)
+		}
+	}
+
 	isOwner := loggedIn && currentUserID == user.Id
 
 	data := struct {
 		Profile
 		IsOwner      bool
 		LoggedUserId int
+		PhotoURLs    []string
 	}{
 		Profile:      user,
 		IsOwner:      isOwner,
 		LoggedUserId: loggedUserID,
+		PhotoURLs:    photoURLs,
 	}
 
 	t, err := template.ParseFiles("templates/profile.html", "templates/header.html", "templates/footer.html")
@@ -271,6 +284,28 @@ func user_settings(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func servePhoto(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	photoID := vars["photoID"]
+
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	var photoData []byte
+	err = db.QueryRow("SELECT `photo` FROM `photos` WHERE `id` = ?", photoID).Scan(&photoData)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	w.Header().Set("Content-Type", "image/jpeg")
+	w.Write(photoData)
+}
+
 func change_desc(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	description := r.FormValue("description")
@@ -299,6 +334,117 @@ func change_desc(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/profile/%s", Id), http.StatusSeeOther)
 }
 
+func create(w http.ResponseWriter, r *http.Request) {
+	session := GetSession(w, r)
+	currentUserID := session.Values["user_id"].(uint16)
+
+	loggedUserID := int(currentUserID)
+
+	fmt.Print(currentUserID)
+
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	var user Profile
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	data := struct {
+		Profile
+		LoggedUserId int
+	}{
+		Profile:      user,
+		LoggedUserId: loggedUserID,
+	}
+
+	t, err := template.ParseFiles("templates/create.html", "templates/header.html", "templates/footer.html")
+	if err != nil {
+		fmt.Fprintf(w, err.Error())
+		return
+	}
+
+	fmt.Println(user)
+
+	t.ExecuteTemplate(w, "create", data)
+}
+
+func createPhoto(w http.ResponseWriter, r *http.Request) {
+	// Ограничение на размер загружаемого файла
+	r.ParseMultipartForm(10 << 20) // 10 MB
+
+	// Получаем файл и заголовки
+	file, _, err := r.FormFile("photo")
+	if err != nil {
+		fmt.Fprintf(w, "Error retrieving the file")
+		return
+	}
+	defer file.Close()
+
+	// Чтение файла в буфер
+	photoData, err := io.ReadAll(file)
+	if err != nil {
+		fmt.Fprintf(w, "Error reading the file")
+		return
+	}
+
+	// Подключение к БД
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Вставка фотографии в базу данных
+	stmt, err := db.Prepare("INSERT INTO `photos` (`photo`) VALUES (?)")
+	if err != nil {
+		panic(err)
+	}
+	defer stmt.Close()
+
+	// Выполняем запрос и получаем ID добавленной фотографии
+	res, err := stmt.Exec(photoData)
+	if err != nil {
+		panic(err)
+	}
+	photoID, err := res.LastInsertId()
+	if err != nil {
+		panic(err)
+	}
+
+	// Получаем ID текущего пользователя из сессии
+	session := GetSession(w, r)
+	currentUserID := session.Values["user_id"].(uint16)
+
+	// Получаем текущий список ID фотографий пользователя
+	var currentPhotos string
+	err = db.QueryRow("SELECT `photos` FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&currentPhotos)
+	if err != nil {
+		panic(err)
+	}
+
+	// Обновляем список фотографий
+	if currentPhotos == "0" || currentPhotos == "" { // Если нет фото, заменяем "0" или пустое значение на ID новой фотографии
+		currentPhotos = fmt.Sprintf("%d", photoID)
+	} else {
+		currentPhotos = fmt.Sprintf("%s,%d", currentPhotos, photoID)
+	}
+
+	// Обновляем запись в таблице all_users
+	_, err = db.Exec("UPDATE `all_users` SET `photos` = ? WHERE `id` = ?", currentPhotos, currentUserID)
+	if err != nil {
+		panic(err)
+	}
+
+	// Перенаправление на главную страницу
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
 func handleFunc() {
 	rtr := mux.NewRouter()
 
@@ -306,11 +452,14 @@ func handleFunc() {
 	rtr.HandleFunc("/register", register).Methods("GET")
 	rtr.HandleFunc("/login", login).Methods("GET", "POST")
 	rtr.HandleFunc("/logout", logout).Methods("GET")
+	rtr.HandleFunc("/create", create).Methods("GET")
+	rtr.HandleFunc("/createPhoto", createPhoto).Methods("POST")
 	rtr.HandleFunc("/reg_user", reg_user).Methods("POST")
 	rtr.HandleFunc("/profile/{user_id:[0-9]+}/change_desc", change_desc).Methods("POST")
 	rtr.HandleFunc("/profile/{user_id:[0-9]+}", user_profile).Methods("GET")
 	rtr.HandleFunc("/profile/{user_id:[0-9]+}/settings", user_settings).Methods("GET")
 	rtr.HandleFunc("/log_user", logUser).Methods("GET") // Новый маршрут
+	rtr.HandleFunc("/photo/{photoID:[0-9]+}", servePhoto).Methods("GET")
 
 	http.Handle("/", rtr)
 

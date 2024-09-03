@@ -3,21 +3,25 @@
 
 <!-- Отображение пользователей -->
 {{ if .Users }}
-    {{ range .Users }}
-        <div class="user">
-            <h1>{{ .Username }}</h1>
-            <h2>Id = {{ .Id }}</h2>
-            <h3>Photos: {{ .Photos }}</h3>
-            <a href="/profile/{{ .Id }}" class="user-button">перейти на страницу пользователя</a>
-        </div>
-    {{ else }}
-        <h1>пользователей не найдено</h1>
-    {{ end }}
+    <div class="user-grid">
+        {{ range .Users }}
+            <a href="/profile/{{ .Id }}">
+                <div class="user">
+                    <h1>{{ .Username }}</h1>
+                    <h2>Id = {{ .Id }}</h2>
+                    <h3>Photos: {{ .Photos }}</h3>
+                    <!-- <a href="/profile/{{ .Id }}" class="user-button">перейти на страницу пользователя</a> -->
+                </div>
+            </a>
+        {{ else }}
+            <h1>пользователей не найдено</h1>
+        {{ end }}
+    </div>
 {{ else }}
     <h1>пользователей не найдено</h1>
 {{ end }}
 
-<a href="/profile/{{ .LoggedUserId }}">{{ .LoggedUserId }}</a>
+<!-- <a href="/profile/{{ .LoggedUserId }}">{{ .LoggedUserId }}</a> -->
 
 {{ template "footer" }}
 {{ end }}

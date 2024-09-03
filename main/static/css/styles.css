@@ -124,15 +124,20 @@ h2{
 .user {
     background-color: rgb(207, 207, 207);
     color: black;
-    margin: 20px;
+    /* margin: 20px; */
     display: flex;
     justify-content: center;
     align-items: center;
     flex-flow: column;
-    width: 30%;
+    /* width: 30%; */
     align-self: center;
     padding: 10px;
     border-radius: 40px;
+    transition: 0.3s;
+}
+
+.user:hover{
+    background-color: rgb(168, 168, 168);
 }
 
 .user-button{
@@ -152,10 +157,13 @@ h2{
     display: flex;
     flex-flow: column;
     align-self: center;
+    padding-bottom: 30px;
+    border-bottom: 3px solid white;
 }
 
 .profile-line{
     display: flex;
+    
 }
 
 .profile_page-icon{
@@ -216,3 +224,43 @@ h2{
 .profile-roots-button:hover{
     font-size: 25px;
 }
+
+.photo-grid {
+    display: grid;
+    width: 80%;
+    align-self: center;
+    margin-top: 30px;
+    justify-content: center;
+    grid-template-columns: repeat(3, 1fr); /* Создаёт 3 равные колонки */
+    gap: 10px; /* Промежуток между изображениями */
+}
+
+.ProfilePhoto {
+    width: 100%; /* Занимает всю ширину ячейки */
+    height: auto; /* Высота автоматически пропорциональна ширине */
+    object-fit: cover; /* Обрезает изображение, чтобы оно соответствовало ячейке */
+}
+
+.user-grid{
+    display: grid;
+    width: 80%;
+    align-self: center;
+    /* align-content: center; */
+    justify-content: center;
+    /* margin-top: 30px; */
+    grid-template-columns: repeat(3, 400px); /* Создаёт 3 равные колонки */
+    gap: 30px; 
+}
+
+.zero-photo{
+    display: flex;
+    justify-content: center;
+    flex-flow: column;
+    align-items: center;
+}
+
+.zero-photo-img{
+    filter: invert(1);
+    width: 200px;
+}
+

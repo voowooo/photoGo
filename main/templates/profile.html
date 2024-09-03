@@ -2,47 +2,49 @@
 
 {{ template "header" . }}
 
-    <!-- <h1>{{ .Username }}</h1>
-
+<div class="profile">
+    <div class="profile-line">
+        <img src="../static/icons/profile_page-icon.png" alt="profile_page-icon" class="profile_page-icon">
+        <div class="profile-block">
+            <h1>{{ .Username }}</h1>
+            <div class="profile-line profile-info">
+                <h2>ID: {{ .Id }}</h2>
+                <h2 style="margin-left: 20px;">Фото: {{ .Photos }}</h2>
+            </div>
+            <h2 class="profile-block-description">О себе:</h2>
+            <h3 class="profile-block-description-text">{{ .Description }} </h3>
+        </div>
+    </div>
     {{ if .IsOwner }}
-        <h2>Ваш пароль: {{ .Password }}</h2>
+        <div class="profile-roots">
+            <a href="/create">
+                <img src="../static/icons/create_photo-icon.png" alt="create_photo" class="profile-roots-icon">
+            </a>
+            <a href="/logout" class="profile-roots-button">Выйти</a>
+            <a href="{{ .Id }}/settings">
+                <img src="../static/icons/user_settings-icon.png" alt="settings" class="profile-roots-icon">
+            </a>
+        </div>
+    {{ end }}
+</div>
+
+{{ if .PhotoURLs}}
+    <div class="photo-grid">
+{{end}}
+
+
+    {{ range .PhotoURLs }}
+        <img src="{{ . }}" alt="User Photo" class="ProfilePhoto">
     {{ else }}
-        <h2>Пароль: скрыт</h2>
+        <div class="zero-photo">
+            <img src="../static/icons/zero_photo-icon.png" alt="user has no photos" class="zero-photo-img">
+            <h2>Фото пока нету</h2>
+        </div>
     {{ end }}
 
-    <h2>Id = {{ .Id }}</h2>
-    <h3>Photos: {{ .Photos }}</h3>
-    <a href="/" class="user-button">На главную</a>
+</div>
 
-    {{ if .IsOwner }}
-        <a href="/logout" class="user-button">Выйти</a>
-    {{ end }} -->
 
-    <div class="profile">
-        <div class="profile-line">
-            <img src="../static/icons/profile_page-icon.png" alt="profile_page-icon" class="profile_page-icon">
-            <div class="profile-block">
-                <h1>{{ .Username }}</h1>
-                <div class="profile-line profile-info">
-                    <h2>ID: {{ .Id }}</h2>
-                    <h2 style="margin-left: 20px;">Фото: {{ .Photos }}</h2>
-                </div>
-                <h2 class="profile-block-description">О себе:</h2>
-                <h3 class="profile-block-description-text">{{ .Description}} </h3>
-            </div>
-        </div>
-        {{ if .IsOwner }}
-                <div class="profile-roots">
-                    <a href="#">
-                        <img src="../static/icons/create_photo-icon.png" alt="create_photo" class="profile-roots-icon">
-                    </a>
-                    <a href="/logout" class="profile-roots-button">Выйти</a>
-                    <a href="{{ .Id }}/settings">
-                        <img src="../static/icons/user_settings-icon.png" alt="settings" class="profile-roots-icon">
-                    </a>
-                </div>
-        {{ end }}
-    </div>
 
 {{ template "footer" }}
 

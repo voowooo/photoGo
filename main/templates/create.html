@@ -1,0 +1,16 @@
+{{ define "create" }}
+
+{{ template "header" . }}
+
+    <h1>Hey {{ .Username }} let's add the photo</h1>
+    
+    <form action="/createPhoto" method="post" enctype="multipart/form-data">
+        <input type="file" name="photo">
+        <input type="submit">
+    </form>
+
+    <a href="/" class="user-button">На главную</a>
+
+{{ template "footer" }}
+
+{{ end }}
