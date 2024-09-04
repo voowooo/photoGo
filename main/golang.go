@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
-	"strconv"
 	"strings"
 	"text/template"
 
@@ -18,7 +16,6 @@ import (
 type Profile struct {
 	Id                                      uint16
 	Username, Password, Photos, Description string
-	UserPhoto                               []byte
 }
 
 type PageData struct {
@@ -62,7 +59,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	users := []Profile{}
 	for res.Next() {
 		var user Profile
-		err = res.Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.UserPhoto)
+		err = res.Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description)
 		if err != nil {
 			panic(err)
 		}
@@ -134,35 +131,22 @@ func reg_user(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	description := r.FormValue("description")
 
-	// Открываем файл с изображением
-	filePath := "static/icons/profile_page-icon.png"
-	userphoto, err := os.ReadFile(filePath)
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
+	// username = "test"
+
+	fmt.Println(username + password)
 
 	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
+		panic(err)
 	}
+
 	defer db.Close()
 
-	// Используем подготовленное выражение для безопасной вставки данных
-	stmt, err := db.Prepare("INSERT INTO `all_users` (`name`, `password`, `photos`, `description`, `userPhoto`) VALUES (?, ?, '0', ?, ?)")
+	insert, err := db.Query(fmt.Sprintf("INSERT INTO `all_users` (`name`, `password`, `photos`, `description`) VALUES ('%s', '%s', '0', '%s')", username, password, description))
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
+		panic(err)
 	}
-	defer stmt.Close()
-
-	// Выполняем запрос с передачей данных
-	_, err = stmt.Exec(username, password, description, userphoto)
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
+	defer insert.Close()
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -188,7 +172,7 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	var user Profile
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", requestedUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.UserPhoto)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", requestedUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -204,16 +188,6 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	isOwner := loggedIn && currentUserID == user.Id
-
-	var UserPhotoUrl string
-	UserPhotoUrl = "/UserPhoto/" + strconv.Itoa(int(user.Id))
-
-	fmt.Println("photo")
-	fmt.Println("photo")
-	fmt.Println(strconv.Itoa(int(user.Id)))
-	fmt.Println(UserPhotoUrl)
-	fmt.Println("photo")
-	fmt.Println("photo")
 
 	data := struct {
 		Profile
@@ -247,7 +221,7 @@ func logUser(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	var dbUser Profile
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `name` = ? AND `password` = ?", username, password).Scan(&dbUser.Id, &dbUser.Username, &dbUser.Password, &dbUser.Photos, &dbUser.Description, &dbUser.UserPhoto)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `name` = ? AND `password` = ?", username, password).Scan(&dbUser.Id, &dbUser.Username, &dbUser.Password, &dbUser.Photos, &dbUser.Description)
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
@@ -282,7 +256,7 @@ func user_settings(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	var user Profile
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", requestedUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.UserPhoto)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", requestedUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -323,28 +297,6 @@ func servePhoto(w http.ResponseWriter, r *http.Request) {
 
 	var photoData []byte
 	err = db.QueryRow("SELECT `photo` FROM `photos` WHERE `id` = ?", photoID).Scan(&photoData)
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-
-	w.Header().Set("Content-Type", "image/jpeg")
-	w.Write(photoData)
-}
-
-func serveUserPhoto(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	photoID := vars["photoID"]
-
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	defer db.Close()
-
-	var photoData []byte
-	err = db.QueryRow("SELECT `userPhoto` FROM `all_users` WHERE `id` = ?", photoID).Scan(&photoData)
 	if err != nil {
 		http.NotFound(w, r)
 		return
@@ -397,7 +349,7 @@ func create(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	var user Profile
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.UserPhoto)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -508,7 +460,6 @@ func handleFunc() {
 	rtr.HandleFunc("/profile/{user_id:[0-9]+}/settings", user_settings).Methods("GET")
 	rtr.HandleFunc("/log_user", logUser).Methods("GET") // Новый маршрут
 	rtr.HandleFunc("/photo/{photoID:[0-9]+}", servePhoto).Methods("GET")
-	rtr.HandleFunc("/UserPhoto/{photoID:[0-9]+}", serveUserPhoto).Methods("GET")
 
 	http.Handle("/", rtr)
 
