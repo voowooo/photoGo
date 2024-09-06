@@ -169,7 +169,12 @@ h2{
 .profile_page-icon{
     width: 250px;
     margin-right: 50px;
-    filter: invert(1);
+    /* filter: invert(1); */
+    width: 250px;
+    height: 250px;
+    border-radius: 250px;
+    /* clip-path: circle(50%); */
+    object-fit: cover;
 }
 
 .profile-block{
@@ -264,3 +269,83 @@ h2{
     width: 200px;
 }
 
+.settings-center {
+    align-self: center;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+.settings-center-button{
+    background-color: rgb(117, 117, 117);
+    padding: 10px;
+    margin: 20px;
+    border-radius: 20px;
+    font-size: 23px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.settings-center-button:hover{
+    /* font-size: 25px; */
+    background-color: rgb(96, 96, 96);
+}
+
+.settings-line{
+    display: flex;
+    align-items: center;
+}
+
+.settings-password{
+    display: none;
+    padding: 10px;
+    margin: 20px;
+    font-size: 23px;
+}
+
+.settings-block{
+    display: flex;
+    flex-flow: column;
+    align-self: center;
+    width: 50%;
+}
+
+.settings-description-textarea{
+    width: 90%;
+    background-color: rgba(255, 255, 255, 0);
+    color: white;
+    border: 3px solid rgba(255, 255, 255, 0.297);
+    /* text-align: center; */
+    font-size: 20px;
+    padding: 5px;
+    border-radius: 15px;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.settings-description-textarea:focus{
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.276);
+}
+
+.settings-description-button-line{
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+}
+
+.settings-blocks{
+    margin-top: 20px;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+}
+
+.settings-input-file{
+    font-size: 20px;
+    height: 112px;
+    margin-top: 10px;
+    /* background-color: ; */
+}

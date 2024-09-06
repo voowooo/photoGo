@@ -3,16 +3,40 @@
 {{ template "header" . }}
 
     {{ if .IsOwner }}
-        <h1>Settings of {{ .Username }}</h1>
-        <h2>Ваш пароль: {{ .Password }}</h2>
-        <h2>Id = {{ .Id }}</h2>
-        <h3>Photos: {{ .Photos }}</h3>
-        <form action="change_desc" method="post">
-            <input type="text" name="description" id="description" placeholder="Описание профиля" class="signin-form-input">
-            <button class="signin-form-button">изменить</button>
-        </form>
+        <div class="settings-center">
+            <h1>Здравствуй {{ .Username }}👋, это твои настройки⚙️</h1>
+            <div class="settings-line">
+                <h2>Ваш пароль:</h2>
+                <h2 class="settings-center-button" onclick="settingsShowPass()" id="settings-password-button">показать пароль</h2>
+                <h2 class="settings-password" id="settings-password">{{ .Password }}</h2>
+                <!-- <h2 class="settings-center-button" onclick="console.log('cliked')" id="settings-password">показать пароль</h2> -->
+            </div>
+            <h2>Ваш Id = {{ .Id }}</h2>
+        </div>
+        <!-- <h3>Photos: {{ .Photos }}</h3> -->
+        <div class="settings-blocks">
+            <div class="settings-block">
+                <h1>Расскажите о себе📝</h1>
+                <form action="change_desc" method="post">
+                    <!-- <input type="text" name="description" id="description" placeholder="Описание профиля" class="signin-form-input"> -->
+                    <textarea name="description" id="description" placeholder="Описание профиля" class="settings-description-textarea" maxlength="500" rows="4"></textarea>
+                    <div class="settings-description-button-line">
+                        <button class="signin-form-button">изменить</button>
+                    </div>
+                </form>
+            </div>
+            <div class="settings-block">
+                <h1>Добавьте фото профиля📷</h1>
+                <form action="addUserphoto" method="post" enctype="multipart/form-data">
+                    <input type="file" name="photo" class="settings-input-file">
+                    <div class="settings-description-button-line">
+                        <button class="signin-form-button">Добавить</button>
+                    </div>
+                </form>  
+            </div>  
+        </div>
         <a href="/" class="user-button">На главную</a>
-        <a href="/logout" class="user-button">Выйти</a>
+        <a href="/logout" class="profile-roots-button">Выйти</a>
     {{ else }}
         <h1>ДОСТУП ОГРАНИЧЕН</h1>
     {{ end }}
