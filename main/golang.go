@@ -17,6 +17,7 @@ import (
 type Profile struct {
 	Id, Userphoto                           uint16
 	Username, Password, Photos, Description string
+	UserphotoURL                            string
 }
 
 type PageData struct {
@@ -31,14 +32,17 @@ var showUserPage = Profile{}
 // var showUser = Profile{}
 
 func index(w http.ResponseWriter, r *http.Request) {
+	// Парсинг HTML-шаблонов
 	t, err := template.ParseFiles("templates/index.html", "templates/header.html", "templates/footer.html")
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 		return
 	}
 
+	// Получение сессии
 	session := GetSession(w, r)
 
+	// Инициализация переменной для ID залогиненного пользователя
 	loggedUserID := 0
 	if values, ok := session.Values["user_id"]; ok {
 		if loggedUserId, ok := values.(uint16); ok {
@@ -46,32 +50,60 @@ func index(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Подключение к базе данных
 	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
 
+	// Запрос на получение всех пользователей из таблицы `all_users`
 	res, err := db.Query("SELECT * FROM `all_users`")
 	if err != nil {
 		panic(err)
 	}
 
+	// Создание пустого массива пользователей
 	users := []Profile{}
+	var user Profile
+
+	// Итерация по результатам запроса
 	for res.Next() {
-		var user Profile
 		err = res.Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto)
 		if err != nil {
 			panic(err)
 		}
-		users = append(users, user)
+
+		// Преобразование ID фотографии в URL для отображения
+		var userphotoURL string
+		if user.Userphoto != 0 {
+			userphotoURL = "/userphoto/" + strconv.Itoa(int(user.Userphoto))
+		} else {
+			userphotoURL = "../static/icons/profile_page-icon.png" // URL по умолчанию
+		}
+
+		fmt.Println(userphotoURL)
+
+		// Добавляем пользователя с URL фотографии в массив
+		users = append(users, Profile{
+			Id:           user.Id,
+			Username:     user.Username,
+			Password:     user.Password,
+			Photos:       user.Photos,
+			Description:  user.Description,
+			UserphotoURL: userphotoURL,
+		})
+
+		fmt.Println("Photo URL:", userphotoURL) // Отладочная информация
 	}
 
+	// Данные для передачи в шаблон
 	data := PageData{
 		Users:        users,
 		LoggedUserId: loggedUserID,
 	}
 
+	// Рендеринг шаблона с данными
 	t.ExecuteTemplate(w, "index", data)
 }
 

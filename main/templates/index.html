@@ -7,9 +7,14 @@
         {{ range .Users }}
             <a href="/profile/{{ .Id }}">
                 <div class="user">
-                    <h1>{{ .Username }}</h1>
-                    <h2>Id = {{ .Id }}</h2>
-                    <h3>Photos: {{ .Photos }}</h3>
+                    <div class="index-user-block">
+                        <img src="{{ .UserphotoURL }}" alt="User Photo" class="index-userphoto">
+                    </div>
+                    <div class="index-user-block">
+                        <h1>{{ .Username }}</h1>
+                        <h2>Id = {{ .Id }}</h2>
+                        <h3>Photos: {{ .Photos }}</h3>
+                    </div>
                     <!-- <a href="/profile/{{ .Id }}" class="user-button">перейти на страницу пользователя</a> -->
                 </div>
             </a>
