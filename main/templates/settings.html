@@ -40,8 +40,8 @@
             <h1>Вы уверены что хотите УДАЛИТЬ аккаунт?(</h1>
             <h2>востановить аккаунт будет НЕВОЗМОЖНО!</h2>
             <div class="delete-account-buttons">
-                <a class="delete-account-button" onclick='close()'>Отмена</a>
-                <a class="warning delete-account-button ">УДАЛИТЬ</a>
+                <a href="/profile/{{ .Id }}/settings" class="delete-account-button" onclick='close()'>Отмена</a>
+                <a href="/deleteaccount" class="warning delete-account-button">УДАЛИТЬ</a>
             </div>
         </div>
 

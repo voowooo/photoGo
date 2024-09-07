@@ -579,6 +579,41 @@ func serveUserphoto(w http.ResponseWriter, r *http.Request) {
 	w.Write(photoData)
 }
 
+func deleteAccount(w http.ResponseWriter, r *http.Request) {
+	session := GetSession(w, r)
+	currentUserID, ok := session.Values["user_id"].(uint16)
+	if !ok {
+		http.Error(w, "Не удалось получить ID пользователя", http.StatusUnauthorized)
+		return
+	}
+
+	fmt.Println("Текущий пользователь ID:", currentUserID)
+
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	if err != nil {
+		http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare("DELETE FROM all_users WHERE id = ?")
+	if err != nil {
+		http.Error(w, "Ошибка при подготовке запроса", http.StatusInternalServerError)
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(currentUserID)
+	if err != nil {
+		fmt.Println("Ошибка при удалении пользователя из базы данных:", err)
+		http.Error(w, "Ошибка удаления аккаунта", http.StatusInternalServerError)
+		return
+	}
+
+	ClearSession(w, r)
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
+}
+
 func handleFunc() {
 	rtr := mux.NewRouter()
 
@@ -596,6 +631,7 @@ func handleFunc() {
 	rtr.HandleFunc("/log_user", logUser).Methods("GET") // Новый маршрут
 	rtr.HandleFunc("/photo/{photoID:[0-9]+}", servePhoto).Methods("GET")
 	rtr.HandleFunc("/userphoto/{photoID:[0-9]+}", serveUserphoto).Methods("GET")
+	rtr.HandleFunc("/deleteaccount", deleteAccount).Methods("GET")
 
 	http.Handle("/", rtr)
 
