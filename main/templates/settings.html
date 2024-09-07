@@ -35,8 +35,21 @@
                 </form>  
             </div>  
         </div>
-        <a href="/" class="user-button">На главную</a>
-        <a href="/logout" class="profile-roots-button">Выйти</a>
+
+        <div class="delete-account-div" id="delete-account-div">
+            <h1>Вы уверены что хотите УДАЛИТЬ аккаунт?(</h1>
+            <h2>востановить аккаунт будет НЕВОЗМОЖНО!</h2>
+            <div class="delete-account-buttons">
+                <a class="delete-account-button" onclick='close()'>Отмена</a>
+                <a class="warning delete-account-button ">УДАЛИТЬ</a>
+            </div>
+        </div>
+
+        <div class="settings-buttons">
+            <a href="/" class="settings-button">На главную</a>
+            <a href="/logout" class="settings-button warning">Выйти из аккаунта</a>
+            <a class="settings-button warning" onclick="deleteAccount()">Удалить аккаунт</a>
+        </div>
     {{ else }}
         <h1>ДОСТУП ОГРАНИЧЕН</h1>
     {{ end }}
