@@ -140,13 +140,15 @@ h2{
     padding: 10px;
     font-size: 20px;
     border-radius: 15px;
+    border: 0;
     transition: 0.3s;
     cursor: pointer;
 }
 
 .signin-form-button:hover{
-    background-color: rgb(103, 103, 103);
-    color: white;
+    /* background-color: rgb(103, 103, 103); */
+    background-color: rgb(201, 201, 201);
+    /* color: white; */
 }
 
 .user {
@@ -265,10 +267,10 @@ h2{
 .settings-buttons{
     display: flex;
     justify-content: space-between;
-    width: 80%;
+    width: 70%;
     align-self: center;
     margin-top: 70px;
-    background-color: bisque;
+    background-color: rgb(169, 149, 149);
     padding: 10px;
     border-radius: 20px;
 }

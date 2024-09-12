@@ -9,7 +9,7 @@
             <h1>{{ .Username }}</h1>
             <div class="profile-line profile-info">
                 <h2>ID: {{ .Id }}</h2>
-                <h2 style="margin-left: 20px;">Фото: {{ .Photos }}</h2>
+                <!-- <h2 style="margin-left: 20px;">Фото: {{ .Photos }}</h2> -->
             </div>
             <h2 class="profile-block-description">О себе:</h2>
             <h3 class="profile-block-description-text">{{ .Description }} </h3>
@@ -20,7 +20,7 @@
             <a href="/create">
                 <img src="../static/icons/create_photo-icon.png" alt="create_photo" class="profile-roots-icon">
             </a>
-            <a href="/logout" class="profile-roots-button">Выйти</a>
+            <!-- <a href="/logout" class="profile-roots-button">Выйти</a> -->
             <a href="{{ .Id }}/settings">
                 <img src="../static/icons/user_settings-icon.png" alt="settings" class="profile-roots-icon">
             </a>
