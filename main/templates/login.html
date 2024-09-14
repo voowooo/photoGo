@@ -9,7 +9,10 @@
             <h2>Здравствуй....?</h2>
             <input type="text" name="username" id="username" placeholder="Ваше Имя" class="signin-form-input" onchange="HelloTextChange()">
             <h2>Введите ваш пароль</h2>
-            <input type="password" name="password" id="password" placeholder="Ваш пароль" class="signin-form-input">
+            <div class="password-line">
+                <input type="password" name="password" id="password" placeholder="Ваш пароль" class="signin-form-password-input">
+                <img src="/static/icons/show-pass-icon.png" alt="show_password" class="signin-showpass" onmouseover="showInputPass(1)" onmouseout="showInputPass(0)">
+            </div>
             <button class="signin-form-button">Войти</button>
         </form>
     </div>

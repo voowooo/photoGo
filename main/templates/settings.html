@@ -6,7 +6,7 @@
         <div class="settings-center">
             <h1>Здравствуй {{ .Username }}👋, это твои настройки⚙️</h1>
             <div class="settings-line">
-                <h2>Ваш пароль:</h2>
+                <h2 data-lang="settings_showPassword">Ваш пароль:</h2>
                 <h2 class="settings-center-button" onclick="settingsShowPass()" id="settings-password-button">показать пароль</h2>
                 <h2 class="settings-password" id="settings-password">{{ .Password }}</h2>
                 <!-- <h2 class="settings-center-button" onclick="console.log('cliked')" id="settings-password">показать пароль</h2> -->
@@ -48,6 +48,12 @@
         <div class="settings-buttons">
             <!-- <a href="/" class="settings-button">На главную</a> -->
             <a href="/logout" class="settings-button warning">Выйти из аккаунта</a>
+            <!-- <button class="settings-lang-button" data-btn="by">
+                <h1>BY</h1>
+            </button>
+            <button class="settings-lang-button" data-btn="ru">
+                <h1>RU</h1>
+            </button> -->
             <a class="settings-button warning" onclick="deleteAccount()">Удалить аккаунт</a>
         </div>
     {{ else }}
