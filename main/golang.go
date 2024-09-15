@@ -308,16 +308,29 @@ func user_settings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var userphotoURL string
+	userphotoID := user.Userphoto
+
+	fmt.Println(strconv.Itoa(int(userphotoID)))
+
+	if userphotoID != 0 {
+		userphotoURL = "/userphoto/" + strconv.Itoa(int(userphotoID))
+	} else {
+		userphotoURL = "/static/icons/profile_page-icon.png"
+	}
+
 	isOwner := loggedIn && currentUserID == user.Id
 
 	data := struct {
 		Profile
 		IsOwner      bool
 		LoggedUserId int
+		UserphotoURL string
 	}{
 		Profile:      user,
 		IsOwner:      isOwner,
 		LoggedUserId: loggedUserID,
+		UserphotoURL: userphotoURL,
 	}
 
 	t, err := template.ParseFiles("templates/settings.html", "templates/header.html", "templates/footer.html")
