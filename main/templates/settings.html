@@ -30,7 +30,7 @@
                 <form action="addUserphoto" method="post" enctype="multipart/form-data" class="settings-block-form">
                     <div class="settings-user-card">
                         <div class="line center-line">
-                            <img src="{{ .UserphotoURL }}" alt="profile_page-icon" class="settings-profile_page-icon">
+                            <img src="{{ .LoggedUserphotoURL }}" alt="profile_page-icon" class="settings-profile_page-icon">
                             <h2>{{ .Username }}</h2>
                         </div>
                         <label for="input_userphoto" class="userphoto_label">Новое фото</label>
@@ -42,23 +42,27 @@
             </div>  
         </div>
 
-        <div class="confirm-userphoto-body" id="confirmUserphoto">
-            <h1>Отредактируйте фото вашего профиля</h1>
-            <form action="addUserphoto" method="post" enctype="multipart/form-data" class="settings-block-form">
-                <input type="file" name="photo" class="settings-input-file userphoto_input" id="input_userphoto" onchange="EditUserphoto()">
-                <img src="" alt="new-userphoto" id="newUserphotoImg" class="new-userphoto">
-                <div class="settings-description-button-line">
-                    <button class="signin-form-button">Добавить</button>
-                </div>
-            </form>  
+        <div id="confirmUserphoto" class="confirm-userphoto">
+            <div class="confirm-userphoto-body">
+                <h1>Отредактируйте фото вашего профиля</h1>
+                <form action="addUserphoto" method="post" enctype="multipart/form-data" class="settings-block-form">
+                    <input type="file" name="photo" class="settings-input-file userphoto_input" id="input_userphoto" onchange="EditUserphoto()">
+                    <img src="" alt="new-userphoto" id="newUserphotoImg" class="new-userphoto">
+                    <div class="settings-description-button-line">
+                        <button class="signin-form-button">Добавить</button>
+                    </div>
+                </form>  
+            </div>
         </div>
 
-        <div class="delete-account-div" id="delete-account-div">
-            <h1>Вы уверены что хотите УДАЛИТЬ аккаунт?(</h1>
-            <h2>востановить аккаунт будет НЕВОЗМОЖНО!</h2>
-            <div class="delete-account-buttons">
-                <a href="/profile/{{ .Id }}/settings" class="delete-account-button" onclick='close()'>Отмена</a>
-                <a href="/deleteaccount" class="warning delete-account-button">УДАЛИТЬ</a>
+        <div class="delete-account" id="delete-account-div">
+            <div class="delete-account-div">
+                <h1>Вы уверены что хотите УДАЛИТЬ аккаунт?(</h1>
+                <h2>востановить аккаунт будет НЕВОЗМОЖНО!</h2>
+                <div class="delete-account-buttons">
+                    <a href="/profile/{{ .Id }}/settings" class="delete-account-button" onclick='close()'>Отмена</a>
+                    <a href="/deleteaccount" class="warning delete-account-button">УДАЛИТЬ</a>
+                </div>
             </div>
         </div>
 

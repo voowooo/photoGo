@@ -95,6 +95,17 @@ h2{
     cursor: pointer;
 }
 
+.header-menu-userphoto{
+    width: 50px;
+    height: 50px;
+    /* filter: invert(1); */
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 100%;
+    border: 1px solid white;
+    padding: 1px;
+}
+
 .signin{
     display: flex;
     flex-flow: column;
@@ -422,8 +433,19 @@ h2{
     object-fit: cover;
 }
 
-.delete-account-div{
+.delete-account{
     display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(10px);
+}
+
+.delete-account-div{
+    display: flex;
     flex-flow: column;
     position:fixed;
     align-self: center;
@@ -578,10 +600,22 @@ h2{
     align-items: center;
 }
 
+.confirm-userphoto{
+    top: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    height: 100%;
+    width: 100%;
+    position: fixed;
+}
+
 .confirm-userphoto-body{
     position: absolute;
     background-color: #797979;
-    display: none;
+    backdrop-filter: blur(5px);
+    display: flex;
     width: 70%;
     height: 60%;
     align-self: center;

@@ -20,9 +20,17 @@ type Profile struct {
 	UserphotoURL                            string
 }
 
+type LoggedUserStruct struct {
+	Id, Userphoto                           uint16
+	Username, Password, Photos, Description string
+	UserphotoURL                            string
+}
+
 type PageData struct {
-	Users        []Profile
-	LoggedUserId int
+	Users              []Profile
+	LoggedUserId       int
+	UserphotoURL       string
+	LoggedUserphotoURL string
 }
 
 var users = []Profile{}
@@ -35,76 +43,82 @@ func index(w http.ResponseWriter, r *http.Request) {
 	// Парсинг HTML-шаблонов
 	t, err := template.ParseFiles("templates/index.html", "templates/header.html", "templates/footer.html")
 	if err != nil {
-		fmt.Fprintf(w, err.Error())
+		http.Error(w, "Ошибка при загрузке шаблонов: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// Получение сессии
 	session := GetSession(w, r)
-
-	// Инициализация переменной для ID залогиненного пользователя
-	loggedUserID := 0
-	if values, ok := session.Values["user_id"]; ok {
-		if loggedUserId, ok := values.(uint16); ok {
-			loggedUserID = int(loggedUserId)
-		}
-	}
+	currentUserID, ok := session.Values["user_id"].(uint16)
 
 	// Подключение к базе данных
 	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
 	if err != nil {
-		panic(err)
+		http.Error(w, "Ошибка подключения к базе данных: "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 	defer db.Close()
 
 	// Запрос на получение всех пользователей из таблицы `all_users`
-	res, err := db.Query("SELECT * FROM `all_users`")
+	rows, err := db.Query("SELECT id, name, password, photos, description, userphoto FROM `all_users`")
 	if err != nil {
-		panic(err)
+		http.Error(w, "Ошибка выполнения запроса: "+err.Error(), http.StatusInternalServerError)
+		return
 	}
+	defer rows.Close()
 
 	// Создание пустого массива пользователей
-	users := []Profile{}
-	var user Profile
-
-	// Итерация по результатам запроса
-	for res.Next() {
-		err = res.Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto)
+	var users []Profile
+	for rows.Next() {
+		var user Profile
+		err := rows.Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto)
 		if err != nil {
-			panic(err)
+			http.Error(w, "Ошибка чтения данных пользователя: "+err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		// Преобразование ID фотографии в URL для отображения
-		var userphotoURL string
 		if user.Userphoto != 0 {
-			userphotoURL = "/userphoto/" + strconv.Itoa(int(user.Userphoto))
+			user.UserphotoURL = "/userphoto/" + strconv.Itoa(int(user.Userphoto))
 		} else {
-			userphotoURL = "../static/icons/profile_page-icon.png" // URL по умолчанию
+			user.UserphotoURL = "/static/icons/profile_page-icon.png" // URL по умолчанию
 		}
 
-		fmt.Println(userphotoURL)
-
-		// Добавляем пользователя с URL фотографии в массив
-		users = append(users, Profile{
-			Id:           user.Id,
-			Username:     user.Username,
-			Password:     user.Password,
-			Photos:       user.Photos,
-			Description:  user.Description,
-			UserphotoURL: userphotoURL,
-		})
-
-		fmt.Println("Photo URL:", userphotoURL) // Отладочная информация
+		users = append(users, user)
 	}
 
 	// Данные для передачи в шаблон
 	data := PageData{
-		Users:        users,
-		LoggedUserId: loggedUserID,
+		Users: users,
+	}
+
+	if ok {
+		// Получение данных текущего пользователя, если сессия есть
+		var loggedUser LoggedUserStruct
+		err = db.QueryRow("SELECT id, name, password, photos, description, userphoto FROM `all_users` WHERE id = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto)
+		if err != nil {
+			http.Error(w, "Ошибка получения данных текущего пользователя: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Преобразование ID фотографии текущего пользователя в URL
+		var loggedUserphotoURL string
+		if loggedUser.Userphoto != 0 {
+			loggedUserphotoURL = "/userphoto/" + strconv.Itoa(int(loggedUser.Userphoto))
+		} else {
+			loggedUserphotoURL = "/static/icons/profile_page-icon.png"
+		}
+
+		data.LoggedUserId = int(currentUserID)
+		data.LoggedUserphotoURL = loggedUserphotoURL
+		data.UserphotoURL = loggedUserphotoURL
 	}
 
 	// Рендеринг шаблона с данными
-	t.ExecuteTemplate(w, "index", data)
+	err = t.ExecuteTemplate(w, "index", data)
+	if err != nil {
+		http.Error(w, "Ошибка рендеринга шаблона: "+err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
@@ -207,8 +221,8 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 	var user Profile
 	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", requestedUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto)
 	if err != nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
+		// http.Redirect(w, r, "/", http.StatusSeeOther)
+		// return
 	}
 
 	photoIDs := strings.Split(user.Photos, ",")
@@ -220,6 +234,24 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	var loggedUser LoggedUserStruct
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto)
+	// if err != nil {
+	// 	http.Redirect(w, r, "/", http.StatusSeeOther)
+	// 	return
+	// }
+
+	var loggedUserphotoURL string
+	LoggedUserphotoID := loggedUser.Userphoto
+
+	fmt.Println(strconv.Itoa(int(LoggedUserphotoID)))
+
+	if LoggedUserphotoID != 0 {
+		loggedUserphotoURL = "/userphoto/" + strconv.Itoa(int(LoggedUserphotoID))
+	} else {
+		loggedUserphotoURL = "/static/icons/profile_page-icon.png"
+	}
+
 	var userphotoURL string
 	userphotoID := user.Userphoto
 
@@ -228,23 +260,25 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 	if userphotoID != 0 {
 		userphotoURL = "/userphoto/" + strconv.Itoa(int(userphotoID))
 	} else {
-		userphotoURL = "../static/icons/profile_page-icon.png"
+		userphotoURL = "/static/icons/profile_page-icon.png"
 	}
 
 	isOwner := loggedIn && currentUserID == user.Id
 
 	data := struct {
 		Profile
-		IsOwner      bool
-		LoggedUserId int
-		PhotoURLs    []string
-		UserphotoURL string
+		IsOwner            bool
+		LoggedUserId       int
+		PhotoURLs          []string
+		UserphotoURL       string
+		LoggedUserphotoURL string
 	}{
-		Profile:      user,
-		IsOwner:      isOwner,
-		LoggedUserId: loggedUserID,
-		PhotoURLs:    photoURLs,
-		UserphotoURL: userphotoURL,
+		Profile:            user,
+		IsOwner:            isOwner,
+		LoggedUserId:       loggedUserID,
+		PhotoURLs:          photoURLs,
+		UserphotoURL:       userphotoURL,
+		LoggedUserphotoURL: loggedUserphotoURL,
 	}
 
 	t, err := template.ParseFiles("templates/profile.html", "templates/header.html", "templates/footer.html")
@@ -308,29 +342,36 @@ func user_settings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var userphotoURL string
-	userphotoID := user.Userphoto
+	var loggedUser LoggedUserStruct
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 
-	fmt.Println(strconv.Itoa(int(userphotoID)))
+	var loggedUserphotoURL string
+	LoggedUserphotoID := loggedUser.Userphoto
 
-	if userphotoID != 0 {
-		userphotoURL = "/userphoto/" + strconv.Itoa(int(userphotoID))
+	fmt.Println(strconv.Itoa(int(LoggedUserphotoID)))
+
+	if LoggedUserphotoID != 0 {
+		loggedUserphotoURL = "/userphoto/" + strconv.Itoa(int(LoggedUserphotoID))
 	} else {
-		userphotoURL = "/static/icons/profile_page-icon.png"
+		loggedUserphotoURL = "/static/icons/profile_page-icon.png"
 	}
 
 	isOwner := loggedIn && currentUserID == user.Id
 
 	data := struct {
 		Profile
-		IsOwner      bool
-		LoggedUserId int
-		UserphotoURL string
+		IsOwner            bool
+		LoggedUserId       int
+		LoggedUserphotoURL string
 	}{
-		Profile:      user,
-		IsOwner:      isOwner,
-		LoggedUserId: loggedUserID,
-		UserphotoURL: userphotoURL,
+		Profile:            user,
+		IsOwner:            isOwner,
+		LoggedUserId:       loggedUserID,
+		LoggedUserphotoURL: loggedUserphotoURL,
 	}
 
 	t, err := template.ParseFiles("templates/settings.html", "templates/header.html", "templates/footer.html")
@@ -414,12 +455,44 @@ func create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var loggedUser LoggedUserStruct
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	var userphotoURL string
+	userphotoID := loggedUser.Userphoto
+
+	fmt.Println(strconv.Itoa(int(userphotoID)))
+
+	if userphotoID != 0 {
+		userphotoURL = "/userphoto/" + strconv.Itoa(int(userphotoID))
+	} else {
+		userphotoURL = "/static/icons/profile_page-icon.png"
+	}
+	user.UserphotoURL = userphotoURL
+
+	var loggedUserphotoURL string
+	LoggedUserphotoID := loggedUser.Userphoto
+
+	fmt.Println(strconv.Itoa(int(LoggedUserphotoID)))
+
+	if LoggedUserphotoID != 0 {
+		loggedUserphotoURL = "/userphoto/" + strconv.Itoa(int(LoggedUserphotoID))
+	} else {
+		loggedUserphotoURL = "/static/icons/profile_page-icon.png"
+	}
+
 	data := struct {
 		Profile
-		LoggedUserId int
+		LoggedUserId       int
+		LoggedUserphotoURL string
 	}{
-		Profile:      user,
-		LoggedUserId: loggedUserID,
+		Profile:            user,
+		LoggedUserId:       loggedUserID,
+		LoggedUserphotoURL: loggedUserphotoURL,
 	}
 
 	t, err := template.ParseFiles("templates/create.html", "templates/header.html", "templates/footer.html")
