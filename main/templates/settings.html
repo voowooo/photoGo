@@ -2,6 +2,8 @@
 
 {{ template "header" . }}
 
+{{ template "secondHeader" . }}
+
     {{ if .IsOwner }}
         <div class="settings-center">
             <h1>Здравствуй {{ .Username }}👋, это твои настройки⚙️</h1>
@@ -19,7 +21,7 @@
                 <h1>Расскажите о себе📝</h1>
                 <form action="change_desc" method="post" class="settings-block-form">
                     <!-- <input type="text" name="description" id="description" placeholder="Описание профиля" class="signin-form-input"> -->
-                    <textarea name="description" id="description" placeholder="Описание профиля" class="settings-description-textarea" maxlength="500" rows="4"></textarea>
+                    <textarea name="description" id="description" placeholder="Описание профиля" class="settings-description-textarea" maxlength="500" rows="4">{{ .Description }}</textarea>
                     <div class="settings-description-button-line">
                         <button class="signin-form-button">изменить</button>
                     </div>

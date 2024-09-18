@@ -31,37 +31,39 @@ function close(what){
 checkPass()
 
 function checkPass() {
-    let password = document.getElementById('password').value;
+    if(document.getElementById('password')){
+        let password = document.getElementById('password').value;
 
     
 
-    let space = /\s+/g;
-    let spaceCount = password.match(space);
+        let space = /\s+/g;
+        let spaceCount = password.match(space);
 
-    // let inptval = password
+        // let inptval = password
 
-    console.log(password != "");
+        console.log(password != "");
 
-    let isEmpt = password == ""
+        let isEmpt = password == ""
 
-    console.log("isempty" + isEmpt)
+        console.log("isempty" + isEmpt)
 
-    // if (){
-    //     document.getElementById('regButton').style.display = "none";
-    // } else {
-    //     document.getElementById('regButton').style.display = "";
-    // }
+        // if (){
+        //     document.getElementById('regButton').style.display = "none";
+        // } else {
+        //     document.getElementById('regButton').style.display = "";
+        // }
 
-    if (spaceCount !== null) { // Проверка, есть ли пробелы
-        document.getElementById('passwordIncorrect').style.display = "flex";
-        document.getElementById('regButton').style.display = "none";
-        document.getElementById('password').style.borderBottom = "2px solid red";
-    } else if (isEmpt == true){
-        document.getElementById('regButton').style.display = "none";
-    } else {
-        document.getElementById('passwordIncorrect').style.display = "none";
-        document.getElementById('regButton').style.display = "";
-        document.getElementById('password').style.borderBottom = "0";
+        if (spaceCount !== null) { // Проверка, есть ли пробелы
+            document.getElementById('passwordIncorrect').style.display = "flex";
+            document.getElementById('regButton').style.display = "none";
+            document.getElementById('password').style.borderBottom = "2px solid red";
+        } else if (isEmpt == true){
+            document.getElementById('regButton').style.display = "none";
+        } else {
+            document.getElementById('passwordIncorrect').style.display = "none";
+            document.getElementById('regButton').style.display = "";
+            document.getElementById('password').style.borderBottom = "0";
+        }
     }
 }
 
@@ -79,6 +81,66 @@ function EditUserphoto(){
         reader.readAsDataURL(file);
     }
 }
+
+
+
+function checkHeaderY(){
+    var body = document.body,
+    html = document.documentElement;
+
+    var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
+
+    const header = document.getElementById('header');
+    const SH = document.getElementById('SH');
+    // let headerY = header.getBoundingClientRect().y;
+    let pageOffset = window.pageYOffset;
+    // window.innerHeight
+    let fotter = pageOffset + window.innerHeight - 120;
+    console.log('lll')
+    console.log(pageOffset);
+    console.log(height)
+    // console.log('checkHeaderY');
+    // console.log(headerY);
+
+    if(pageOffset > 100){
+        SH.style.pointerEvents = "all";
+        SH.style.opacity = "100%";
+    }else{
+        SH.style.opacity = "0%";
+        SH.style.pointerEvents = "none";
+    }
+
+
+
+//     console.log(window.innerHeight);
+
+//     console.log(fotter);
+//     console.log(window.innerHeight + pageOffset)
+
+//     if(pageOffset + window.innerHeight > fotter){
+//         SH.classList.add = "SH-body-sticked";
+//         console.log("colваыывыыавыавl")
+//     } else{
+//         SH.classList.remove = "SH-body-sticked"
+//     }
+}
+
+document.addEventListener('scroll', function(){
+    checkHeaderY()
+})
+
+checkHeaderY();
+
+
+function goup(){
+    window.scroll({
+        top: 0,
+        left: 0,
+        behavior: 'smooth' // Это как катание на круизном лайнере 🛥️
+    });
+}
+
+
 
 
 // const allLangs = ["by", "ru"];
@@ -100,3 +162,20 @@ function EditUserphoto(){
 
 // console.log("space")
 // console.log(spaceCount)
+
+// function show(what){
+//     if(what == 'SHUSS'){
+//         document.getElementById('SHUSS').style.display = "";
+//     }
+// }
+
+// function hide(what){
+//     if(what == 'SHUSS'){
+//         setTimeout(
+//             () => {
+//                 document.getElementById('SHUSS').style.display = "none";
+//             },
+//             0.5 * 1000
+//         );
+//     }
+// }

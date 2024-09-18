@@ -1,0 +1,28 @@
+{{ define "secondHeader" }}
+
+{{ if .LoggedUserId }}
+    <div class="SH-body" id="SH">
+            <a class="header-menu-element" onclick="goup()">
+                <img src="/static/icons/up-icon.png" alt="go up" class="header-menu-icon">
+            </a>
+            <a href="/" class="header-menu-element">
+                <img src="/static/icons/home_page-icon.png" alt="home" class="header-menu-icon">
+            </a>
+            <a href="/search" class="header-menu-element">
+                <img src="/static/icons/search_page-icon.png" alt="search" class="header-menu-icon">
+            </a>
+            <a href="/profile/{{ .LoggedUserId }}" class="header-menu-element" onmouseover="show('SHUSS')" onmouseout="hide('SHUSS')"> 
+                <img src="{{ .LoggedUserphotoURL }}" alt="userhoto" class="header-menu-userphoto">
+            </a>
+            <!-- <div class="SH-user-line-options" id="SHUSS" onmouseover="show('SHUSS')" onmouseout="hide('SHUSS')">        
+                <a href="/profile/{{ .LoggedUserId }}/settings" class="header-menu-element">
+                    <img src="/static/icons/search_page-icon.png" alt="search" class="header-menu-icon">
+                </a>
+                <a href="/profile/{{ .LoggedUserId }}/settings" class="header-menu-element">
+                    <img src="/static/icons/search_page-icon.png" alt="search" class="header-menu-icon">
+                </a>
+            </div> -->
+    </div>
+{{ end }}
+
+{{ end }}

@@ -41,7 +41,7 @@ var showUserPage = Profile{}
 
 func index(w http.ResponseWriter, r *http.Request) {
 	// Парсинг HTML-шаблонов
-	t, err := template.ParseFiles("templates/index.html", "templates/header.html", "templates/footer.html")
+	t, err := template.ParseFiles("templates/index.html", "templates/header.html", "templates/footer.html", "templates/secondHeader.html")
 	if err != nil {
 		http.Error(w, "Ошибка при загрузке шаблонов: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -281,7 +281,7 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 		LoggedUserphotoURL: loggedUserphotoURL,
 	}
 
-	t, err := template.ParseFiles("templates/profile.html", "templates/header.html", "templates/footer.html")
+	t, err := template.ParseFiles("templates/profile.html", "templates/header.html", "templates/secondHeader.html", "templates/footer.html")
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 		return
@@ -374,7 +374,7 @@ func user_settings(w http.ResponseWriter, r *http.Request) {
 		LoggedUserphotoURL: loggedUserphotoURL,
 	}
 
-	t, err := template.ParseFiles("templates/settings.html", "templates/header.html", "templates/footer.html")
+	t, err := template.ParseFiles("templates/settings.html", "templates/header.html", "templates/footer.html", "templates/secondHeader.html")
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 		return
