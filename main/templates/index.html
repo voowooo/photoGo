@@ -8,7 +8,7 @@
     <div class="user-grid">
         {{ range .Users }}
             <a href="/profile/{{ .Id }}">
-                <div class="user">
+                <div class="user" style="background-color: rgb({{ .Color }});">
                     <div class="index-user-block">
                         <img src="{{ .UserphotoURL }}" alt="User Photo" class="index-userphoto">
                     </div>

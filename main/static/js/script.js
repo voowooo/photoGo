@@ -155,7 +155,28 @@ function goup(){
     });
 }
 
+function show(what){
+    if(what == 'settingsColor'){
+        document.getElementById('settingsColorWindow').style.display = 'flex';
+    }
+}
 
+function changecolor(color){
+    document.getElementById('settingsColorPickerUserCard').style.backgroundColor = 'rgb(' + color + ')';
+    document.getElementById('pickedColor').value = color;
+}
+
+const hexToRgb = hex => {
+    let [r, g, b] = hex.match(/\w\w/g).map(x => parseInt(x, 16));
+    return `${r}, ${g}, ${b}`;
+};
+
+
+function changeCustomColor(){
+    document.getElementById('colorPickerLabel').style.backgroundColor = document.getElementById('colorPickerInput').value;
+    document.getElementById('settingsColorPickerUserCard').style.backgroundColor = document.getElementById('colorPickerInput').value;
+    document.getElementById('pickedColor').value = hexToRgb(document.getElementById('colorPickerInput').value);
+}
 
 
 // const allLangs = ["by", "ru"];

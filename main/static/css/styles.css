@@ -165,6 +165,7 @@ h2{
 
 .user {
     background-color: rgb(207, 207, 207);
+    /* background-color: rgb(165, 0, 0); */
     color: black;
     /* margin: 20px; */
     display: flex;
@@ -184,7 +185,8 @@ h2{
 }
 
 .user:hover{
-    background-color: rgb(168, 168, 168);
+    /* background-color: rgb(168, 168, 168); */
+    opacity: 80%;
 }
 
 .user-button{
@@ -377,12 +379,12 @@ h2{
 }
 
 .settings-block{
-    margin-top: 30px;
+    /* margin-top: 30px; */
     display: flex;
     flex-flow: column;
     align-self: center;
     height: 228px;
-    width: 50%;
+    width: 100%;
 }
 
 .settings-description-textarea{
@@ -412,12 +414,22 @@ h2{
 }
 
 .settings-blocks{
-    margin-top: 20px;
+    /* margin-top: 20px;
     align-self: center;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 90%;
+    width: 90%; */
+    display: grid;
+    width: 80%;
+    align-self: center;
+    margin-top: 20px;
+    justify-content: center;
+    grid-template-columns: repeat(2, 600px); /* Создаёт 3 равные колонки */
+    /* grid-auto-rows: 400px; Задаёт высоту каждой строки */
+    gap: 10px; /* Промежуток между изображениями */
+    row-gap: 60px;
+
 }
 
 .settings-input-file{
@@ -701,4 +713,80 @@ h2{
     align-self: center;
     flex-flow: column;
     align-items: center;
+}
+
+.column{
+    display: flex;
+    flex-flow: column;
+}
+
+.settings-color-window{
+    top: 0;
+    display: none;
+    /* display: flex; */
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    height: 100%;
+    width: 100%;
+    position: fixed;
+}
+
+.settings-color-body{
+    position: absolute;
+    background-color: #797979;
+    backdrop-filter: blur(5px);
+    display: flex;
+    width: 70%;
+    height: 60%;
+    align-self: center;
+    border-radius: 20px;
+    padding: 10px;
+    align-items: center;
+    /* justify-content: center; */
+    flex-flow: column;
+}
+
+.settings-color-body-colors{
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    /* grid-auto-rows: 400px; Задаёт высоту каждой строки */
+    gap: 10px; /* Промежуток между изображениями */
+}
+
+.color{
+    height: 60px;
+    width: 60px;
+    border-radius: 100%;
+    border: 2px solid white;
+    transition: 0.3s;
+}
+
+.color:hover{
+    opacity: 70%;
+}
+
+.color-label{
+    height: 60px;
+    width: 60px;
+    border-radius: 100%;
+    border: 2px solid white;
+    transition: 0.3s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.color-label:hover{
+    opacity: 70%;
+}
+
+.color-label-img{
+    height: 50px;
+    width: 50px;
+}
+
+.pickedColor{
+    display: none;
 }

@@ -18,12 +18,14 @@ type Profile struct {
 	Id, Userphoto                           uint16
 	Username, Password, Photos, Description string
 	UserphotoURL                            string
+	Color                                   string
 }
 
 type LoggedUserStruct struct {
 	Id, Userphoto                           uint16
 	Username, Password, Photos, Description string
 	UserphotoURL                            string
+	Color                                   string
 }
 
 type PageData struct {
@@ -61,7 +63,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// Запрос на получение всех пользователей из таблицы `all_users`
-	rows, err := db.Query("SELECT id, name, password, photos, description, userphoto FROM `all_users`")
+	rows, err := db.Query("SELECT id, name, password, photos, description, userphoto, color FROM `all_users`")
 	if err != nil {
 		http.Error(w, "Ошибка выполнения запроса: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -72,7 +74,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	var users []Profile
 	for rows.Next() {
 		var user Profile
-		err := rows.Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto)
+		err := rows.Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto, &user.Color)
 		if err != nil {
 			http.Error(w, "Ошибка чтения данных пользователя: "+err.Error(), http.StatusInternalServerError)
 			return
@@ -133,7 +135,9 @@ func register(w http.ResponseWriter, r *http.Request) {
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("log")
 	if r.Method == http.MethodPost {
+		fmt.Println("logff")
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 
@@ -149,6 +153,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
+
+		fmt.Println("log")
 
 		session := GetSession(w, r)
 		session.Values["user_id"] = dbUser.Id
@@ -168,6 +174,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 }
 
 func logout(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("logout")
 	ClearSession(w, r)
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
@@ -190,7 +197,7 @@ func reg_user(w http.ResponseWriter, r *http.Request) {
 
 	defer db.Close()
 
-	insert, err := db.Query(fmt.Sprintf("INSERT INTO `all_users` (`name`, `password`, `photos`, `description`, `userphoto`) VALUES ('%s', '%s', '0', '%s', 0)", username, password, description))
+	insert, err := db.Query(fmt.Sprintf("INSERT INTO `all_users` (`name`, `password`, `photos`, `description`, `userphoto`, `color`) VALUES ('%s', '%s', '0', '%s', 0, '')", username, password, description))
 	if err != nil {
 		panic(err)
 	}
@@ -220,7 +227,7 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	var user Profile
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", requestedUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", requestedUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto, &user.Color)
 	if err != nil {
 		// http.Redirect(w, r, "/", http.StatusSeeOther)
 		// return
@@ -236,7 +243,7 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var loggedUser LoggedUserStruct
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto, &loggedUser.Color)
 	// if err != nil {
 	// 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	// 	return
@@ -302,7 +309,7 @@ func logUser(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	var dbUser Profile
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `name` = ? AND `password` = ?", username, password).Scan(&dbUser.Id, &dbUser.Username, &dbUser.Password, &dbUser.Photos, &dbUser.Description, &dbUser.Userphoto)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `name` = ? AND `password` = ?", username, password).Scan(&dbUser.Id, &dbUser.Username, &dbUser.Password, &dbUser.Photos, &dbUser.Description, &dbUser.Userphoto, &dbUser.Color)
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
@@ -337,14 +344,14 @@ func user_settings(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	var user Profile
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", requestedUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", requestedUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto, &user.Color)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
 	var loggedUser LoggedUserStruct
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto, &loggedUser.Color)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -407,6 +414,34 @@ func servePhoto(w http.ResponseWriter, r *http.Request) {
 	w.Write(photoData)
 }
 
+func change_color(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	Color := r.FormValue("pickedColor")
+	Id := vars["user_id"]
+
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Use a prepared statement to prevent SQL injection
+	stmt, err := db.Prepare("UPDATE `all_users` SET `color` = ? WHERE `id` = ?")
+	if err != nil {
+		panic(err)
+	}
+	defer stmt.Close()
+
+	// Execute the query with user-provided values
+	_, err = stmt.Exec(Color, Id)
+	if err != nil {
+		panic(err)
+	}
+
+	// Redirect to the user's profile or wherever appropriate
+	http.Redirect(w, r, fmt.Sprintf("/profile/%s", Id), http.StatusSeeOther)
+}
+
 func change_desc(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	description := r.FormValue("description")
@@ -450,14 +485,14 @@ func create(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	var user Profile
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto, &user.Color)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
 	var loggedUser LoggedUserStruct
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto, &loggedUser.Color)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -713,6 +748,7 @@ func handleFunc() {
 	rtr.HandleFunc("/profile/{user_id:[0-9]+}/addUserphoto", addUserphoto).Methods("POST")
 	rtr.HandleFunc("/reg_user", reg_user).Methods("POST")
 	rtr.HandleFunc("/profile/{user_id:[0-9]+}/change_desc", change_desc).Methods("POST")
+	rtr.HandleFunc("/profile/{user_id:[0-9]+}/changeUserColor", change_color).Methods("POST")
 	rtr.HandleFunc("/profile/{user_id:[0-9]+}", user_profile).Methods("GET")
 	rtr.HandleFunc("/profile/{user_id:[0-9]+}/settings", user_settings).Methods("GET")
 	rtr.HandleFunc("/log_user", logUser).Methods("GET") // Новый маршрут

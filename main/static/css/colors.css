@@ -1,0 +1,35 @@
+.red{
+    background-color: rgb(255, 120, 120);
+}
+
+.green{
+    background-color: rgb(68, 135, 68);
+}
+
+.blue{
+    background-color: rgb(71, 71, 199);
+}
+
+.yellow{
+    background-color: rgb(210, 210, 132);
+}
+
+.purple{
+    background-color: rgb(128, 60, 128);
+}
+
+.wheat{
+    background-color: wheat;
+}
+
+.white{
+    background-color: white;
+}
+
+.aqua{
+    background-color: rgb(109, 190, 190);
+}
+
+.brown{
+    background-color: rgb(90, 40, 40);
+}
