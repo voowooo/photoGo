@@ -42,6 +42,7 @@ var showUserPage = Profile{}
 func index(w http.ResponseWriter, r *http.Request) {
 	// Парсинг HTML-шаблонов
 	t, err := template.ParseFiles("templates/index.html", "templates/header.html", "templates/footer.html", "templates/secondHeader.html")
+	// t, err := template.ParseFiles("templatesNEW/index.html", "templatesNEW/header.html", "templatesNEW/footer.html")
 	if err != nil {
 		http.Error(w, "Ошибка при загрузке шаблонов: "+err.Error(), http.StatusInternalServerError)
 		return

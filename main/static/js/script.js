@@ -82,6 +82,21 @@ function EditUserphoto(){
     }
 }
 
+function preWatchNewPhoto(){
+    // document.getElementById('NewPhoto').src = document.getElementById('addPhoto').value;
+    
+    let fileInput = document.getElementById('addPhoto');
+    let file = fileInput.files[0];
+
+    if (file) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('NewPhoto').src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
 
 
 function checkHeaderY(){

@@ -1,0 +1,33 @@
+{{ define "index" }}
+{{ template "header" . }}
+
+<!-- Отображение пользователей -->
+{{ if .Users }}
+    <div class="user-grid">
+        {{ range .Users }}
+            <a href="/profile/{{ .Id }}">
+                <div class="user">
+                    <div class="index-user-block">
+                        <img src="{{ .UserphotoURL }}" alt="User Photo" class="index-userphoto">
+                    </div>
+                    <div class="index-user-block">
+                        <h1>{{ .Username }}</h1>
+                        <!-- <h2>Id = {{ .Id }}</h2> -->
+                        <!-- <h3>Photos: {{ .Photos }}</h3> -->
+                        <!-- <h3>{{ .Description }}</h3> -->
+                    </div>
+                    <!-- <a href="/profile/{{ .Id }}" class="user-button">перейти на страницу пользователя</a> -->
+                </div>
+            </a>
+        {{ else }}
+            <h1>пользователей не найдено</h1>
+        {{ end }}
+    </div>
+{{ else }}
+    <h1>пользователей не найдено</h1>
+{{ end }}
+
+<!-- <a href="/profile/{{ .LoggedUserId }}">{{ .LoggedUserId }}</a> -->
+
+{{ template "footer" }}
+{{ end }}

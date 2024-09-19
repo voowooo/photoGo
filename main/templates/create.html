@@ -1,16 +1,16 @@
 {{ define "create" }}
 
 {{ template "header" . }}
-
-    <h1>Hey {{ .Username }} let's add the photo</h1>
-    
-    <form action="/createPhoto" method="post" enctype="multipart/form-data">
-        <input type="file" name="photo">
-        <input type="submit">
-    </form>
-
-    <a href="/" class="user-button">На главную</a>
-
+    <div class="create-form-div">
+        <h1 style="margin-bottom: 20px;">Опубликовать фото</h1>
+        <form action="/createPhoto" method="post" enctype="multipart/form-data" class="create-form-div">
+            <input type="file" name="photo" id="addPhoto" onchange="preWatchNewPhoto()" class="addPhotoInput">
+            <label for="addPhoto" class="addPhoto-label">
+                <img src="/static/icons/create_plus-icon.png" alt="NewPhoto" id="NewPhoto" class="NewPhoto">
+            </label>
+                <button class="signin-form-button">Добавить</button>
+        </form>
+    </div>
 {{ template "footer" }}
 
 {{ end }}

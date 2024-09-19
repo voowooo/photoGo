@@ -306,16 +306,13 @@ h2{
     align-self: center;
     margin-top: 30px;
     justify-content: center;
-    grid-template-columns: repeat(3, 400px); /* Создаёт 3 равные колонки */
-    grid-auto-rows: 400px; /* Задаёт высоту каждой строки */
+    grid-template-columns: repeat(3, 1fr); /* Создаёт 3 равные колонки */
     gap: 10px; /* Промежуток между изображениями */
 }
 
-
 .ProfilePhoto {
     width: 100%; /* Занимает всю ширину ячейки */
-    height: 100%;
-    /* height: auto; Высота автоматически пропорциональна ширине */
+    height: auto; /* Высота автоматически пропорциональна ширине */
     object-fit: cover; /* Обрезает изображение, чтобы оно соответствовало ячейке */
 }
 
@@ -435,8 +432,6 @@ h2{
     border-radius: 250px;
     /* clip-path: circle(50%); */
     object-fit: cover;
-    border: 1px solid white;
-    padding: 1px;
 }
 
 .delete-account{
@@ -666,39 +661,4 @@ h2{
     /* top: 5%; */
     /* bottom: 99.5px; */
     left: 0;
-}
-
-.addPhotoInput{
-    display: none;
-}
-
-.NewPhoto{
-    height: 500px;
-    width: 500px;
-    object-fit: cover;
-    background: rgb(142,0,0);
-    background: linear-gradient(146deg, rgba(142,0,0,1) 0%, rgba(101,102,63,1) 47%, rgba(47,47,47,1) 100%); 
-    border-radius: 20px;
-    transition: 0.3s;
-}
-
-.NewPhoto:hover{
-    opacity: 50%;
-}
-
-.create-header{
-    align-self: center;
-}
-
-.addPhoto-label{
-    cursor: pointer;
-    height: 500px;
-    width: 500px;
-}
-
-.create-form-div{
-    display: flex;
-    align-self: center;
-    flex-flow: column;
-    align-items: center;
 }
