@@ -171,7 +171,6 @@ const hexToRgb = hex => {
     return `${r}, ${g}, ${b}`;
 };
 
-
 function changeCustomColor(){
     document.getElementById('colorPickerLabel').style.backgroundColor = document.getElementById('colorPickerInput').value;
     document.getElementById('settingsColorPickerUserCard').style.backgroundColor = document.getElementById('colorPickerInput').value;

@@ -600,6 +600,7 @@ h2{
     justify-content: space-between;
     width: 560px;
     background-color: rgb(63, 63, 63);
+    /* color: black; */
     border-radius: 20px;
     padding: 20px;
 }
@@ -789,4 +790,19 @@ h2{
 
 .pickedColor{
     display: none;
+}
+
+.settings-color-body-line{
+    display: flex;
+    margin-top: 30px;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+}
+
+.settings-color-body-block{
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
 }

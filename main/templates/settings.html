@@ -33,7 +33,7 @@
                     <div class="settings-user-card" style="background-color: rgb({{ .Color }});">
                         <div class="line center-line">
                             <img src="{{ .LoggedUserphotoURL }}" alt="profile_page-icon" class="settings-profile_page-icon">
-                            <h2>{{ .Username }}</h2>
+                            <h2 style="color: black;">{{ .Username }}</h2>
                         </div>
                         <div class="column">
                             <label for="input_userphoto" class="userphoto_label" style="margin-bottom: 10px;">Новое фото</label>
@@ -58,29 +58,36 @@
             <form class="settings-color-body" action="changeUserColor" method="post">
                 <input type="text" name="pickedColor" class="pickedColor" id="pickedColor"> 
                 <h1>Выберите свой стиль профиля</h1>
-                <div class="line">
-                    <div class="settings-color-body-colors">
-                        <a class="color red" onclick="changecolor('255, 120, 120')"></a>
-                        <a class="color green" onclick="changecolor('68, 135, 68')"></a>
-                        <a class="color blue" onclick="changecolor('71, 71, 199')"></a>
-
-                        <a class="color yellow" onclick="changecolor('210, 210, 132')"></a>
-                        <a class="color purple" onclick="changecolor('128, 60, 128')"></a>
-                        <a class="color wheat" onclick="changecolor('245, 222, 179')"></a>
-
-                        <a class="color aqua" onclick="changecolor('109, 190, 190')"></a>
-                        <a class="color brown" onclick="changecolor('90, 40, 40')"></a>
-                        <label for="colorPickerInput" class="color-label" id="colorPickerLabel">
-                            <img src="/static/icons/create_plus-icon.png" alt="create_plus" class="color-label-img">
-                        </a>
-                        <input type="color" style="display: none;" id="colorPickerInput" onchange="changeCustomColor()">
-                    </div>
-                    <div class="user" style="width: 400px;" id="settingsColorPickerUserCard" style="background-color: rgb({{ .Color }});">
-                        <div class="index-user-block">
-                            <img src="{{ .LoggedUserphotoURL }}" alt="User Photo" class="index-userphoto">
+                <div class="settings-color-body-line">
+                    
+                    <div>
+                        <h2 class="settings-color-body-block">Цвет</h2>
+                        <div class="settings-color-body-colors">
+                            <a class="color red" onclick="changecolor('255, 120, 120')"></a>
+                            <a class="color green" onclick="changecolor('68, 135, 68')"></a>
+                            <a class="color blue" onclick="changecolor('71, 71, 199')"></a>
+    
+                            <a class="color yellow" onclick="changecolor('210, 210, 132')"></a>
+                            <a class="color purple" onclick="changecolor('128, 60, 128')"></a>
+                            <a class="color wheat" onclick="changecolor('245, 222, 179')"></a>
+    
+                            <a class="color aqua" onclick="changecolor('109, 190, 190')"></a>
+                            <a class="color brown" onclick="changecolor('90, 40, 40')"></a>
+                            <label for="colorPickerInput" class="color-label" id="colorPickerLabel">
+                                <img src="/static/icons/create_plus-icon.png" alt="create_plus" class="color-label-img">
+                            </a>
+                            <input type="color" style="display: none;" id="colorPickerInput" onchange="changeCustomColor()">
                         </div>
-                        <div class="index-user-block">
-                            <h1>{{ .Username }}</h1>
+                    </div>
+                    <div class="settings-color-body-block">
+                        <h2>Предпросмотр</h2>
+                        <div class="user" style="width: 400px;" id="settingsColorPickerUserCard" style="background-color: rgb({{ .Color }});">
+                            <div class="index-user-block">
+                                <img src="{{ .LoggedUserphotoURL }}" alt="User Photo" class="index-userphoto">
+                            </div>
+                            <div class="index-user-block">
+                                <h1>{{ .Username }}</h1>
+                            </div>
                         </div>
                     </div>
                 </div>
