@@ -319,6 +319,11 @@ h2{
     height: 100%;
     /* height: auto; Высота автоматически пропорциональна ширине */
     object-fit: cover; /* Обрезает изображение, чтобы оно соответствовало ячейке */
+    transition: 0.3s;
+}
+
+.ProfilePhoto:hover{
+    opacity: 70%;
 }
 
 .user-grid{
@@ -599,7 +604,7 @@ h2{
     align-items: center;
     justify-content: space-between;
     width: 560px;
-    background-color: rgb(63, 63, 63);
+    background-color: rgb(207, 207, 207);
     /* color: black; */
     border-radius: 20px;
     padding: 20px;
@@ -746,6 +751,7 @@ h2{
     align-items: center;
     /* justify-content: center; */
     flex-flow: column;
+    /* margin: 20px; */
 }
 
 .settings-color-body-colors{
@@ -753,6 +759,7 @@ h2{
     grid-template-columns: repeat(3, auto);
     /* grid-auto-rows: 400px; Задаёт высоту каждой строки */
     gap: 10px; /* Промежуток между изображениями */
+
 }
 
 .color{
@@ -805,4 +812,77 @@ h2{
     flex-flow: column;
     align-items: center;
     justify-content: center;
+    /* margin: 20px 0 0; */
+}
+
+.photo-div{
+    align-items: center;
+    justify-content: center;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(5px);
+}
+
+.photo-body{
+    display: flex;
+    border-radius: 20px;
+    padding: 20px;
+    height: 600px;
+    width: 85%;
+    background-color: #797979;
+    position: relative;
+    z-index: 100;
+}
+
+.photo-body-img{
+    width: 600px;
+    height: 600px;
+    border-radius: 20px;
+    object-fit: cover;
+    align-self: center;
+}
+
+.photo-body-close-btn{
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    cursor: pointer;
+    right: 10px;
+    top: 10px;
+    z-index: 999999;
+    filter: invert();
+    transition: 0.3s;
+}
+
+.photo-body-close-btn:hover{
+    width: 55px;
+    height: 55px;
+}
+
+.photo-body-block{
+    width: 557px;
+    border-left: 3px dashed white;
+    padding-left: 10px;
+    margin-left: 10px;
+    height: 600px;
+
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+.photo-body-user-card{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 360px;
+    background-color: rgb(207, 207, 207);
+    /* color: black; */
+    border-radius: 20px;
+    padding: 20px;
+    height: 80px;
 }

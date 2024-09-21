@@ -111,9 +111,9 @@ function checkHeaderY(){
     let pageOffset = window.pageYOffset;
     // window.innerHeight
     let fotter = pageOffset + window.innerHeight - 120;
-    console.log('lll')
-    console.log(pageOffset);
-    console.log(height)
+    // console.log('lll')
+    // console.log(pageOffset);
+    // console.log(height)
     // console.log('checkHeaderY');
     // console.log(headerY);
 
@@ -140,12 +140,6 @@ function checkHeaderY(){
 //     }
 }
 
-document.addEventListener('scroll', function(){
-    checkHeaderY()
-})
-
-checkHeaderY();
-
 
 function goup(){
     window.scroll({
@@ -159,6 +153,23 @@ function show(what){
     if(what == 'settingsColor'){
         document.getElementById('settingsColorWindow').style.display = 'flex';
     }
+}
+
+function close(what){
+    console.log('close');
+    if(what == 'photoDIV'){
+        document.getElementById('photoDIV').style.display = 'none';
+    }
+}
+
+function closePhotoDiv() {
+    console.log('close');
+    document.getElementById('photoDIV').style.display = 'none';
+    // window.location.href.split('#')[0];
+    // window.location = window.location.href.split('#')[0];
+    // window.location.href = window.location.href.split('#')[0];
+    // console.log(window.location.href.split('#')[0])
+    history.replaceState(null, null, window.location.href.split('#')[0]);
 }
 
 function changecolor(color){
@@ -177,6 +188,24 @@ function changeCustomColor(){
     document.getElementById('pickedColor').value = hexToRgb(document.getElementById('colorPickerInput').value);
 }
 
+window.addEventListener('popstate', function() {
+    showFullPhoto();
+});
+
+
+
+function showFullPhoto(){
+    console.log("SFP")
+    if(window.location.href.includes("/photo")){
+        console.log("SFP if")
+        let imgSrc = window.location.href.substring(window.location.href.indexOf('#') + 1);
+        // let imgSrc = window.location.href.replace(/http:\/\/localhost:8080\/profile\/46#/, '');
+        console.log(imgSrc)
+        document.getElementById('photoDIV').style.display = "flex";
+        document.getElementById('photoIMG').src = imgSrc;
+    }
+    
+}
 
 // const allLangs = ["by", "ru"];
 // let currentLang = "ru";

@@ -2,7 +2,11 @@
 
 {{ template "header" . }}
 
-{{ template "secondHeader" . }}
+{{ if ne .LoggedUserId 0 }}
+
+    {{ template "secondHeader" . }}
+
+{{ end }}
 
 <div class="profile">
     <div class="profile-line">
@@ -34,9 +38,10 @@
     <div class="photo-grid">
 {{end}}
 
-
     {{ range .PhotoURLs }}
-        <img src="{{ . }}" alt="User Photo" class="ProfilePhoto">
+        <a href="#{{ . }}">
+            <img src="{{ . }}" alt="User Photo" class="ProfilePhoto">
+        </a>
     {{ else }}
         <div class="zero-photo">
             <img src="../static/icons/zero_photo-icon.png" alt="user has no photos" class="zero-photo-img">
@@ -44,6 +49,22 @@
         </div>
     {{ end }}
 
+</div>
+
+<div class="photo-div" id="photoDIV">
+    <div class="photo-body">
+        <img src="../static/icons/photo-div_close-icon.png" alt="close" onclick="closePhotoDiv()" class="photo-body-close-btn">
+        <img src="" alt="PHOTO" id="photoIMG" class="photo-body-img">
+        <div class="photo-body-block">
+            <h2>Автор</h2>
+            <div class="photo-body-user-card" style="background-color: rgb({{ .Color }})">
+                <div class="line center-line">
+                    <img src="{{ .UserphotoURL }}" alt="profile_page-icon" class="settings-profile_page-icon">
+                    <h1 style="color: black;">{{ .Username }}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
