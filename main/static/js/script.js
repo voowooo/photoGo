@@ -100,46 +100,39 @@ function preWatchNewPhoto(){
 
 
 function checkHeaderY(){
-    var body = document.body,
-    html = document.documentElement;
-
-    var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
-
     const header = document.getElementById('header');
     const SH = document.getElementById('SH');
-    // let headerY = header.getBoundingClientRect().y;
     let pageOffset = window.pageYOffset;
-    // window.innerHeight
-    let fotter = pageOffset + window.innerHeight - 120;
-    // console.log('lll')
-    // console.log(pageOffset);
-    // console.log(height)
-    // console.log('checkHeaderY');
-    // console.log(headerY);
 
     if(pageOffset > 100){
-        SH.style.pointerEvents = "all";
-        SH.style.opacity = "100%";
+        // SH.style.pointerEvents = "all";
+        // SH.style.opacity = "100%";
+        header.classList.add('header-wrapp');
+        let scrollDir = '';
+        if(window.location.href.includes("/profile") && pageOffset < 200){
+            const profileElement = document.getElementById('profile');
+
+            // Получаем позицию элемента profile относительно документа и его высоту
+            const profileBottom = profileElement.getBoundingClientRect().bottom + window.pageYOffset;
+
+            // Прокручиваем страницу до позиции, где элемент profile будет скрыт (вне видимой области)
+            window.scrollTo({
+                top: profileBottom - 90,
+                behavior: 'smooth' // Плавная прокрутка
+            });
+
+            // window.scroll({ 
+            //     top: 430,
+            //     left: 0,
+            //     behavior: 'smooth' // Это как катание на круизном лайнере 🛥️
+            // });
+        }
     }else{
-        SH.style.opacity = "0%";
-        SH.style.pointerEvents = "none";
+        // SH.style.opacity = "0%";
+        // SH.style.pointerEvents = "none";
+        header.classList.remove('header-wrapp');
     }
-
-
-
-//     console.log(window.innerHeight);
-
-//     console.log(fotter);
-//     console.log(window.innerHeight + pageOffset)
-
-//     if(pageOffset + window.innerHeight > fotter){
-//         SH.classList.add = "SH-body-sticked";
-//         console.log("colваыывыыавыавl")
-//     } else{
-//         SH.classList.remove = "SH-body-sticked"
-//     }
 }
-
 
 function goup(){
     window.scroll({
@@ -206,6 +199,8 @@ function showFullPhoto(){
     }
     
 }
+
+
 
 // const allLangs = ["by", "ru"];
 // let currentLang = "ru";
