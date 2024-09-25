@@ -10,6 +10,7 @@ html{
 }
 
 body{
+    z-index: 1;
     display: flex;
     min-height: 100vh;
     height: 100%;
