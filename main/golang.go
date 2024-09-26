@@ -569,14 +569,15 @@ func createPhoto(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// Вставка фотографии в базу данных
-	stmt, err := db.Prepare("INSERT INTO `photos` (`photo`) VALUES (?)")
+	stmt, err := db.Prepare("INSERT INTO `photos` (`photo`, `comments`) VALUES (?, ?)")
+	// stmt, err := db.Prepare(fmt.Sprintf("INSERT INTO `comments` (`text`, `owner`) VALUES ('%s', '%d')", content, owner))
 	if err != nil {
 		panic(err)
 	}
 	defer stmt.Close()
 
 	// Выполняем запрос и получаем ID добавленной фотографии
-	res, err := stmt.Exec(photoData)
+	res, err := stmt.Exec(photoData, "joi")
 	if err != nil {
 		panic(err)
 	}
@@ -736,6 +737,74 @@ func deleteAccount(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
+func addComment(w http.ResponseWriter, r *http.Request) {
+	content := r.FormValue("commContent")
+	PhotoId := r.FormValue("PhotoId")
+
+	session := GetSession(w, r)
+	owner := int(session.Values["user_id"].(uint16))
+
+	fmt.Println("newComment")
+	fmt.Println(content)
+	fmt.Println(owner)
+
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	// insert, err := db.Query(fmt.Sprintf("INSERT INTO `comments` (`text`, `owner`) VALUES ('%s', '%d')", content, owner))
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer insert.Close()
+
+	stmt, err := db.Prepare("INSERT INTO `comments` (`text`, `owner`) VALUES (?, ?)")
+	if err != nil {
+		panic(err)
+	}
+	defer stmt.Close()
+
+	res, err := stmt.Exec(content, owner)
+	if err != nil {
+		panic(err)
+	}
+	CommentId, err := res.LastInsertId()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("commentId")
+	fmt.Println(CommentId)
+
+	fmt.Println(PhotoId)
+
+	// Получаем текущий список ID фотографий пользователя
+	var currentComments string
+	err = db.QueryRow("SELECT `comments` FROM `photos` WHERE `id` = ?", PhotoId).Scan(&currentComments)
+	if err != nil {
+		panic(err)
+	}
+
+	// Обновляем список фотографий
+	if currentComments == "0" || currentComments == "" { // Если нет фото, заменяем "0" или пустое значение на ID новой фотографии
+		currentComments = fmt.Sprintf("%d", CommentId)
+	} else {
+		currentComments = fmt.Sprintf("%s,%d", currentComments, CommentId)
+	}
+
+	// Обновляем запись в таблице all_users
+	_, err = db.Exec("UPDATE `photos` SET `comments` = ? WHERE `id` = ?", currentComments, PhotoId)
+	if err != nil {
+		panic(err)
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+
+}
+
 func handleFunc() {
 	rtr := mux.NewRouter()
 
@@ -755,6 +824,7 @@ func handleFunc() {
 	rtr.HandleFunc("/photo/{photoID:[0-9]+}", servePhoto).Methods("GET")
 	rtr.HandleFunc("/userphoto/{photoID:[0-9]+}", serveUserphoto).Methods("GET")
 	rtr.HandleFunc("/deleteaccount", deleteAccount).Methods("GET")
+	rtr.HandleFunc("/profile/addComment", addComment).Methods("POST")
 
 	http.Handle("/", rtr)
 

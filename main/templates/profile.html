@@ -63,6 +63,14 @@
                     <h1 style="color: black;">{{ .Username }}</h1>
                 </div>
             </div>
+            <form action="addComment" method="post" class="settings-block-form">
+                <!-- <input type="text" name="description" id="description" placeholder="Описание профиля" class="signin-form-input"> -->
+                <textarea name="commContent" id="commContent" placeholder="Комментарий" class="settings-description-textarea" maxlength="500" rows="4"></textarea>
+                <input type="number" id="PhotoIdInput" name="PhotoId">
+                <div class="settings-description-button-line">
+                    <button class="signin-form-button">добавить</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
