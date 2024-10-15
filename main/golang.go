@@ -805,6 +805,10 @@ func addComment(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func fullPhoto(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("full")
+}
+
 func handleFunc() {
 	rtr := mux.NewRouter()
 
@@ -825,6 +829,7 @@ func handleFunc() {
 	rtr.HandleFunc("/userphoto/{photoID:[0-9]+}", serveUserphoto).Methods("GET")
 	rtr.HandleFunc("/deleteaccount", deleteAccount).Methods("GET")
 	rtr.HandleFunc("/profile/addComment", addComment).Methods("POST")
+	rtr.HandleFunc("/fullphoto/photo/{photoID:[0-9]+}", fullPhoto).Methods("GET")
 
 	http.Handle("/", rtr)
 

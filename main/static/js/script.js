@@ -187,33 +187,67 @@ window.addEventListener('popstate', function() {
 
 
 
-function showFullPhoto(){
-    console.log("SFP")
-    if(window.location.href.includes("/photo")){
-        console.log("SFP if")
-        let imgSrc = window.location.href.substring(window.location.href.indexOf('#') + 1);
-        // const url = "http://localhost:8080/profile/46#/photo/27";
+// function showFullPhoto(){
+//     console.log("SFP")
+//     if(window.location.href.includes("/photo")){
+//         console.log("SFP if")
+//         let imgSrc = window.location.href.substring(window.location.href.indexOf('#') + 1);
+//         // const url = "http://localhost:8080/profile/46#/photo/27";
+//         const url = window.location.href;
+//         const regex = /photo\/(\d+)/;
+//         const matches = url.match(regex);
+
+//         let PhotoId = matches[1]
+
+//         document.getElementById('PhotoIdInput').value = PhotoId;
+
+//         if (matches && matches[1]) {
+//             console.log("ID фото:", PhotoId);
+//         } else {
+//             console.log("ID фото не найден");
+//         }
+//         console.log(imgSrc)
+//         document.getElementById('photoDIV').style.display = "flex";
+//         document.getElementById('photoIMG').src = imgSrc;
+//     }
+    
+// }
+
+
+
+
+function FullPhoto(imgData) {
+    console.log("Полное изображение:", imgData);
+    let newUrl = '/fullphoto' + imgData;
+    window.history.pushState({page: "subscriptions"}, "Subscriptions", newUrl);
+}
+
+function showFullPhoto() {
+    if (window.location.href.includes("/fullphoto/")) {
+        console.log("Показать полное изображение");
+        let imgSrc = window.location.href.substring(window.location.href.indexOf('/fullphoto') + 1);
         const url = window.location.href;
         const regex = /photo\/(\d+)/;
         const matches = url.match(regex);
-
-        let PhotoId = matches[1]
-
-        document.getElementById('PhotoIdInput').value = PhotoId;
-
+        
+        let PhotoId = matches[1];
+        
+        console.log("ID фото:", PhotoId);
+        
         if (matches && matches[1]) {
-            console.log("ID фото:", PhotoId);
+            console.log("ID фото найден:", PhotoId);
         } else {
             console.log("ID фото не найден");
         }
-        console.log(imgSrc)
         document.getElementById('photoDIV').style.display = "flex";
         document.getElementById('photoIMG').src = imgSrc;
     }
-    
 }
 
 
+window.addEventListener('popstate', function() {
+    showFullPhoto();
+});
 
 
 

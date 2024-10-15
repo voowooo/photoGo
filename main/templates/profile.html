@@ -39,7 +39,7 @@
 {{end}}
 
     {{ range .PhotoURLs }}
-        <a href="#{{ . }}">
+        <a onclick="FullPhoto('{{ . }}')">
             <img src="{{ . }}" alt="User Photo" class="ProfilePhoto">
         </a>
     {{ else }}
