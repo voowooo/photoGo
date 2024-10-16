@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -19,6 +20,12 @@ type Profile struct {
 	Username, Password, Photos, Description string
 	UserphotoURL                            string
 	Color                                   string
+}
+
+type CommentStruct struct {
+	Id    uint16
+	Text  string
+	Owner string
 }
 
 type LoggedUserStruct struct {
@@ -740,6 +747,7 @@ func deleteAccount(w http.ResponseWriter, r *http.Request) {
 func addComment(w http.ResponseWriter, r *http.Request) {
 	content := r.FormValue("commContent")
 	PhotoId := r.FormValue("PhotoId")
+	ProfileId := r.FormValue("ProfileId")
 
 	session := GetSession(w, r)
 	owner := int(session.Values["user_id"].(uint16))
@@ -801,12 +809,126 @@ func addComment(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	RedirectUrl := "/profile/" + ProfileId
+	http.Redirect(w, r, RedirectUrl, http.StatusSeeOther)
 
 }
 
 func fullPhoto(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("full")
+
+	// Получаем текущий путь URL
+	urlPath := r.URL.Path
+	fmt.Println("URL Path:", urlPath)
+
+	// Разделяем строку по символу '/'
+	parts := strings.Split(urlPath, "/")
+
+	photoID := ""
+
+	// Проверяем, что в массиве достаточно частей, и получаем последнюю часть (это должно быть число)
+	if len(parts) > 0 {
+		photoID = parts[len(parts)-1]
+		fmt.Println("Photo ID:", photoID)
+	}
+
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	if err != nil {
+		http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	var CurrentPhotoCommentsIds string
+	err = db.QueryRow("SELECT comments FROM photos WHERE id = ?", photoID).Scan(&CurrentPhotoCommentsIds)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	fmt.Println("Comments IDs:", CurrentPhotoCommentsIds)
+
+	// Преобразуем строку с идентификаторами комментариев в массив
+	ids := strings.Split(CurrentPhotoCommentsIds, ",")
+	if len(ids) == 0 {
+		fmt.Println("Нет комментариев для этой фотографии")
+		w.WriteHeader(http.StatusOK)                 // Возвращаем пустой массив, если комментариев нет
+		json.NewEncoder(w).Encode([]CommentStruct{}) // Возвращаем пустой JSON-массив
+		return
+	}
+
+	// Создаем параметры для IN-оператора
+	query, args := createInQuery("SELECT id, text, owner FROM comments WHERE id IN (%s)", ids)
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		http.Error(w, "Ошибка при выполнении запроса", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	// Чтение всех комментариев
+	comments := []CommentStruct{}
+	for rows.Next() {
+		var comment CommentStruct
+		err := rows.Scan(&comment.Id, &comment.Text, &comment.Owner)
+		if err != nil {
+			http.Error(w, "Ошибка при чтении комментариев", http.StatusInternalServerError)
+			return
+		}
+
+		// Выводим значение Owner перед конвертацией
+		fmt.Printf("Owner перед конвертацией: %s\n", comment.Owner)
+
+		comments = append(comments, comment)
+	}
+
+	// Теперь, когда мы прочитали все комментарии, обрабатываем их
+	for i := range comments {
+		// Пробуем конвертировать в целое число
+		ownerId, err := strconv.Atoi(comments[i].Owner)
+		if err != nil {
+			fmt.Printf("Ошибка конвертации Owner в число: %v, значение Owner: %s\n", err, comments[i].Owner)
+			http.Error(w, "Ошибка при конвертации Owner в число", http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Println("ownerId:", ownerId)
+
+		var username string
+		errr := db.QueryRow("SELECT name FROM all_users WHERE id = ?", ownerId).Scan(&username)
+		if errr != nil {
+			if errr == sql.ErrNoRows {
+				// Если не найдено ни одной строки
+				fmt.Println("Пользователь не найден")
+				username = "Неизвестный пользователь" // Обрабатываем неизвестных пользователей корректно
+			} else {
+				http.Error(w, "Ошибка при выполнении запроса", http.StatusInternalServerError)
+				fmt.Println("error")
+				return
+			}
+		}
+
+		fmt.Println("Имя пользователя:", username)
+		comments[i].Owner = username
+		fmt.Printf("Comment ID: %d, Text: %s, Owner: %s\n", comments[i].Id, comments[i].Text, comments[i].Owner)
+	}
+
+	// Установите заголовок и код состояния после завершения всех обработок
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	// Кодируем комментарии в JSON и отправляем клиенту
+	json.NewEncoder(w).Encode(comments)
+}
+
+// Функция для создания SQL-запроса с IN-оператором
+func createInQuery(baseQuery string, ids []string) (string, []interface{}) {
+	query := fmt.Sprintf(baseQuery, strings.Repeat("?,", len(ids)-1)+"?")
+	args := make([]interface{}, len(ids))
+	for i, id := range ids {
+		args[i] = id
+	}
+	return query, args
 }
 
 func handleFunc() {

@@ -1,4 +1,5 @@
 console.log('script is works')
+// import axios from 'axios';
 
 function HelloTextChange(){
     document.getElementById('helloText').innerHTML = "Привет, " + document.getElementById('username').value + "!👋";
@@ -218,38 +219,54 @@ window.addEventListener('popstate', function() {
 
 function FullPhoto(imgData) {
     console.log("Полное изображение:", imgData);
-    let newUrl = '/fullphoto' + imgData;
-    window.history.pushState({page: "subscriptions"}, "Subscriptions", newUrl);
+    let newUrl = 'http://localhost:8080/fullphoto' + imgData;
+
+    let comments = "";
+
+    const parts = newUrl.split('/');
+    const PhotoId = parts[parts.length - 1];
+
+    axios.get(newUrl)
+        .then(response => {
+            comments = response.data; // обработка полученных данных
+
+            console.log("comments");
+            console.log(comments);
+            console.log("comments");
+
+            const AllCommsDiv = document.getElementById("AllCommsDiv");
+
+            AllCommsDiv.innerHTML = '';
+
+            for(let i = 0; i < comments.length; i++){
+                var commentDiv = document.createElement("div");
+                commentDiv.className = 'comm-div';
+            
+                let commentOwner = document.createElement("h1");
+                commentOwner.innerHTML = comments[i].Owner;
+            
+                let commentText = document.createElement("h2");
+                commentText.innerHTML = comments[i].Text;
+            
+                // Добавьте commentOwner и commentText в commentDiv
+                commentDiv.appendChild(commentOwner); // Используйте appendChild вместо присваивания
+                commentDiv.appendChild(commentText); // Добавьте текст комментария
+            
+                // Добавьте commentDiv в photoBodyBlock
+                AllCommsDiv.appendChild(commentDiv);
+            }
+
+
+            // console.log(response.data);
+        })
+        .catch(error => {
+            console.error('There was an error!', error);
+        });
+
+    document.getElementById('photoDIV').style.display = "flex";
+    document.getElementById('photoIMG').src = imgData;
+    document.getElementById('PhotoIdInput').value = PhotoId;
 }
-
-function showFullPhoto() {
-    if (window.location.href.includes("/fullphoto/")) {
-        console.log("Показать полное изображение");
-        let imgSrc = window.location.href.substring(window.location.href.indexOf('/fullphoto') + 1);
-        const url = window.location.href;
-        const regex = /photo\/(\d+)/;
-        const matches = url.match(regex);
-        
-        let PhotoId = matches[1];
-        
-        console.log("ID фото:", PhotoId);
-        
-        if (matches && matches[1]) {
-            console.log("ID фото найден:", PhotoId);
-        } else {
-            console.log("ID фото не найден");
-        }
-        document.getElementById('photoDIV').style.display = "flex";
-        document.getElementById('photoIMG').src = imgSrc;
-    }
-}
-
-
-window.addEventListener('popstate', function() {
-    showFullPhoto();
-});
-
-
 
 
 

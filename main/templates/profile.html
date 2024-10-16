@@ -55,7 +55,7 @@
     <div class="photo-body">
         <img src="../static/icons/photo-div_close-icon.png" alt="close" onclick="closePhotoDiv()" class="photo-body-close-btn">
         <img src="" alt="PHOTO" id="photoIMG" class="photo-body-img">
-        <div class="photo-body-block">
+        <div class="photo-body-block" id="photo-body-block">
             <h2>Автор</h2>
             <div class="photo-body-user-card" style="background-color: rgb({{ .Color }})">
                 <div class="line center-line">
@@ -63,14 +63,23 @@
                     <h1 style="color: black;">{{ .Username }}</h1>
                 </div>
             </div>
-            <form action="addComment" method="post" class="settings-block-form">
-                <!-- <input type="text" name="description" id="description" placeholder="Описание профиля" class="signin-form-input"> -->
-                <textarea name="commContent" id="commContent" placeholder="Комментарий" class="settings-description-textarea" maxlength="500" rows="4"></textarea>
-                <input type="number" id="PhotoIdInput" name="PhotoId">
-                <div class="settings-description-button-line">
-                    <button class="signin-form-button">добавить</button>
+            <div class="photo-body-block-comments">
+                <h1>Комментарии</h1>
+                <div class="all-comms-div" id="AllCommsDiv">
+
                 </div>
-            </form>
+                <form action="addComment" method="post" class="comm-form">
+                    <!-- <input type="text" name="description" id="description" placeholder="Описание профиля" class="signin-form-input"> -->
+                    <div class="comm-form-line">
+                        <textarea name="commContent" id="commContent" placeholder="Комментарий" class="comm-textarea" maxlength="500" rows="2"></textarea>
+                        <button class="add-comm-button">
+                            <img src="../static/icons/up-icon.png" alt="add-comm" class="add-comm-button-icon">
+                        </button>
+                    </div>
+                    <input type="number" id="PhotoIdInput" name="PhotoId" style="display: none;">
+                    <input type="number" id="ProfileId" name="ProfileId" style="display: none;" value="{{ .Id }}">
+                </form>
+            </div>
         </div>
     </div>
 </div>
