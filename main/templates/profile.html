@@ -12,7 +12,17 @@
     <div class="profile-line">
         <img src="{{ .UserphotoURL }}" alt="profile_page-icon" class="profile_page-icon">
         <div class="profile-block">
-            <h1>{{ .Username }}</h1>
+            <h1 onclick="show('shareUserCard')" style="cursor: pointer;">{{ .Username }}</h1>
+            <div class="shareUserCard" id="shareUserCard"> 
+                <div class="shareUserCard-buttons">
+                    <img src="../static/icons/photo-div_close-icon.png" alt="close" onclick="closeShareUserCard()" class="photo-body-close-btn">
+                </div>
+                <div class="shareUserCard-body" style="background-color: rgb({{ .Color }});">
+                    <img src="{{ .UserphotoURL }}" alt="profile_page-icon" class="shareUserCard-userphoto">
+                    <h1>{{ .Username }}</h1>
+                    <h2>ID: {{ .Id }}</h2>
+                </div>
+            </div>
             <div class="profile-line profile-info">
                 <h2>ID: {{ .Id }}</h2>
                 <!-- <h2 style="margin-left: 20px;">Фото: {{ .Photos }}</h2> -->

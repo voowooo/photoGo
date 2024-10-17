@@ -920,6 +920,8 @@ h2{
     max-height: 235px;
     overflow-y: scroll;
     overflow-x: hidden;
+    display: flex;
+    flex-flow: column;
     /* width: 380px; */
 }
 
@@ -979,4 +981,41 @@ h2{
     justify-content: space-between;
     width: 400px;
     align-items: center;
+}
+
+.shareUserCard{
+    display: none;
+    position: fixed;
+    justify-content: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(20px);
+    background-color: #333333de;
+    z-index: 10;
+}
+
+.shareUserCard-body{
+    display: flex;
+    flex-flow: column;
+    height: 400px;
+    width: 300px;
+    align-self: center;
+    left: 50%;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    background-color: rgb(207, 207, 207);
+}
+
+.shareUserCard-userphoto{
+    width: 250px;
+    /* filter: invert(1); */
+    width: 250px;
+    height: 250px;
+    border-radius: 250px;
+    /* clip-path: circle(50%); */
+    object-fit: cover;
+    margin-bottom: 20px;
 }

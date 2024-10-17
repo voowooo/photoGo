@@ -146,7 +146,13 @@ function goup(){
 function show(what){
     if(what == 'settingsColor'){
         document.getElementById('settingsColorWindow').style.display = 'flex';
+    } else if(what == 'shareUserCard'){
+        document.getElementById('shareUserCard').style.display = 'flex';
     }
+}
+
+function closeShareUserCard(){
+    document.getElementById('shareUserCard').style.display = 'none';
 }
 
 function close(what){
@@ -266,6 +272,10 @@ function FullPhoto(imgData) {
     document.getElementById('photoDIV').style.display = "flex";
     document.getElementById('photoIMG').src = imgData;
     document.getElementById('PhotoIdInput').value = PhotoId;
+    // AllCommsDiv.scrollTo({
+    //     top: 0,
+    //     behavior: 'smooth' // Плавная прокрутка
+    // });;
 }
 
 
