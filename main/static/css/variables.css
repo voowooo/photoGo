@@ -1,0 +1,13 @@
+:root {
+    --background: rgb(22,22,22);
+    --background-gradient: linear-gradient(146deg, rgba(22,22,22,1) 0%, rgba(27,27,27,1) 24%, rgba(47,47,47,1) 100%);
+
+    --user-background: rgb(207, 207, 207);
+    --user-color: black;
+
+    --a-color: white;
+
+    --footer-background: #333;
+
+    --photo-grid-background: #797979;
+}

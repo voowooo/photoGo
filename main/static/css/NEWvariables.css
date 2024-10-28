@@ -1,0 +1,16 @@
+:root {
+    /* --background: rgb(232,188,185);;
+    --background-gradient: linear-gradient(180deg, rgba(232,188,185,1) 0%, rgba(243,159,90,1) 16.6%, rgba(174,68,90,1) 33.2%, rgba(102,37,73,1) 49.8%, rgba(69,25,82,1) 66.4%, rgba(29,26,57,1) 83%);; */
+    --background: #f3f0dd;
+    --background-gradient: #f3f0dd;
+
+    --user-background: rgb(91, 93, 57);
+    --user-color: white;
+
+    /* --a-color: #1d1a39; */
+    --a-color: black;
+
+    --footer-background: ;
+
+    --photo-grid-background: #7979794b;
+}

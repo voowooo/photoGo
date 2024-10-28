@@ -192,6 +192,15 @@ window.addEventListener('popstate', function() {
     showFullPhoto();
 });
 
+function shareUserCardDirection(){
+    const checkbox = document.getElementById('shareUserCardDirectionCheckbox');
+    const customCheckbox = document.getElementById('shareUserCardDirToggleDivIn');
+    if (checkbox.checked){
+        customCheckbox.classList.add("shareUserCard-dir-toggle-div-in-checked");
+    } else {
+        customCheckbox.classList.remove("shareUserCard-dir-toggle-div-in-checked");
+    }
+}
 
 
 // function showFullPhoto(){
