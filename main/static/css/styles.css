@@ -17,7 +17,8 @@ body{
     width: 100%;
     flex-flow: column;
     font-family: "Montserrat", sans-serif;
-    color: white;
+    /* color: white; */
+    color: var(--color);
     background: var(--background);
     background: var(--background-gradient);
 }
@@ -1049,4 +1050,62 @@ h2{
 
 .shareUserCard-dir-toggle-div-in-checked{
     left: 30px;
+}
+
+.profile-subscribe-btn{
+    display: flex;
+    width: 140px;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    background-color: #797979;
+    /* padding: 10px; */
+    margin: 10px;
+    margin-left: 0;
+    border-radius: 20px;
+    transition: 0.3s;
+    border: 0;
+}
+
+.profile-subscribe-btn:hover{
+    opacity: 70%;
+}
+
+.profile-sub{
+    display: flex;
+    width: fit-content;
+}
+
+.profile-sub:hover{
+    transition: 0.3s;
+    opacity: 70%;
+}
+
+.AllSubs{
+    display: none;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 20;
+}
+
+.AllSubs-body{
+    display: flex;
+    flex-flow: column;
+    background-color: #797979;
+    padding: 20px;
+    border-radius: 20px;
+    width: 500px;
+    z-index: 21;
+}
+
+.AllSubs-body-column{
+    display: flex;
+    flex-flow: column-reverse;
 }

@@ -288,6 +288,14 @@ function FullPhoto(imgData) {
 }
 
 
+function showFullSubs(){
+    document.getElementById('AllSubs').style.display = "flex";
+}
+
+function showFullFollowers(){
+    document.getElementById('AllFollowers').style.display = "flex";
+}
+
 
 // const allLangs = ["by", "ru"];
 // let currentLang = "ru";

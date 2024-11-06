@@ -16,10 +16,10 @@ import (
 )
 
 type Profile struct {
-	Id, Userphoto                           uint16
-	Username, Password, Photos, Description string
-	UserphotoURL                            string
-	Color                                   string
+	Id, Userphoto                                                     uint16
+	Username, Password, Photos, Description, Subscriptions, Followers string
+	UserphotoURL                                                      string
+	Color                                                             string
 }
 
 type CommentStruct struct {
@@ -204,7 +204,7 @@ func reg_user(w http.ResponseWriter, r *http.Request) {
 
 	defer db.Close()
 
-	insert, err := db.Query(fmt.Sprintf("INSERT INTO `all_users` (`name`, `password`, `photos`, `description`, `userphoto`, `color`) VALUES ('%s', '%s', '0', '%s', 0, '')", username, password, description))
+	insert, err := db.Query(fmt.Sprintf("INSERT INTO `all_users` (`name`, `password`, `photos`, `description`, `userphoto`, `subscriptions`, `followers`, `color`) VALUES ('%s', '%s', '0', '%s', 0, '', '', '')", username, password, description))
 	if err != nil {
 		panic(err)
 	}
@@ -234,7 +234,7 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	var user Profile
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", requestedUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto, &user.Color)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", requestedUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto, &user.Subscriptions, &user.Followers, &user.Color)
 	if err != nil {
 		// http.Redirect(w, r, "/", http.StatusSeeOther)
 		// return
@@ -249,12 +249,17 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	var loggedUser LoggedUserStruct
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto, &loggedUser.Color)
+	// var loggedUser LoggedUserStruct
+	var loggedUser Profile
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto, &loggedUser.Subscriptions, &loggedUser.Followers, &loggedUser.Color)
 	// if err != nil {
 	// 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	// 	return
 	// }
+
+	names := idToNames(user.Subscriptions)
+
+	followers := idToNames(user.Followers)
 
 	var loggedUserphotoURL string
 	LoggedUserphotoID := loggedUser.Userphoto
@@ -287,6 +292,8 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 		PhotoURLs          []string
 		UserphotoURL       string
 		LoggedUserphotoURL string
+		Names              []string
+		Followers          []string
 	}{
 		Profile:            user,
 		IsOwner:            isOwner,
@@ -294,6 +301,8 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 		PhotoURLs:          photoURLs,
 		UserphotoURL:       userphotoURL,
 		LoggedUserphotoURL: loggedUserphotoURL,
+		Names:              names,
+		Followers:          followers,
 	}
 
 	t, err := template.ParseFiles("templates/profile.html", "templates/header.html", "templates/secondHeader.html", "templates/footer.html")
@@ -303,6 +312,57 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t.ExecuteTemplate(w, "profile", data)
+}
+
+func idToNames(ids string) []string {
+	// Разделяем входную строку на отдельные строки ID
+	parts := strings.Split(ids, ",")
+
+	// Создаем срез для числовых ID
+	numbers := make([]int, len(parts))
+
+	// Преобразуем каждую часть в число
+	for i, part := range parts {
+		num, err := strconv.Atoi(part)
+		if err != nil {
+			fmt.Println("Ошибка преобразования:", err)
+			return nil
+		}
+		numbers[i] = num
+	}
+
+	// Подключаемся к базе данных
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	if err != nil {
+		fmt.Println("Ошибка подключения к базе данных:", err)
+		return nil
+	}
+	defer db.Close() // Закрываем соединение по завершении функции
+
+	// Создаем срез для хранения имен
+	names := make([]string, 0, len(numbers))
+
+	// Выполняем запрос для каждого ID и добавляем имя в срез
+	for _, id := range numbers {
+		var name string
+		err = db.QueryRow("SELECT `name` FROM `all_users` WHERE `id` = ?", id).Scan(&name)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				fmt.Printf("ID %d не найден в базе данных.\n", id)
+			} else {
+				fmt.Println("Ошибка запроса:", err)
+			}
+			continue
+		}
+
+		name = "<a href='/profile/" + strconv.Itoa(id) + "' class='profile-sub'>" + "<h2>" + name + "</h2>" + "</a>"
+
+		names = append(names, name)
+	}
+
+	// Выводим и возвращаем массив имен
+	fmt.Println(names)
+	return names
 }
 
 func logUser(w http.ResponseWriter, r *http.Request) {
@@ -316,7 +376,7 @@ func logUser(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	var dbUser Profile
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `name` = ? AND `password` = ?", username, password).Scan(&dbUser.Id, &dbUser.Username, &dbUser.Password, &dbUser.Photos, &dbUser.Description, &dbUser.Userphoto, &dbUser.Color)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `name` = ? AND `password` = ?", username, password).Scan(&dbUser.Id, &dbUser.Username, &dbUser.Password, &dbUser.Photos, &dbUser.Description, &dbUser.Userphoto, &dbUser.Subscriptions, &dbUser.Followers, &dbUser.Color)
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
@@ -351,14 +411,14 @@ func user_settings(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	var user Profile
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", requestedUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto, &user.Color)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", requestedUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto, &user.Subscriptions, &user.Followers, &user.Color)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	var loggedUser LoggedUserStruct
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto, &loggedUser.Color)
+	var loggedUser Profile
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto, &loggedUser.Subscriptions, &loggedUser.Followers, &loggedUser.Color)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -931,6 +991,80 @@ func createInQuery(baseQuery string, ids []string) (string, []interface{}) {
 	return query, args
 }
 
+func new_sub(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("oke")
+
+	session := GetSession(w, r)
+	currentUserID := session.Values["user_id"].(uint16)
+
+	fmt.Println(currentUserID)
+
+	vars := mux.Vars(r)
+	userIDStr := vars["user_id"]
+
+	// Преобразуем user_id из строки в int
+	userSubTo, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		http.Error(w, "Неверный формат числа", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Printf("User ID from URL: %d\n", userSubTo)
+
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	if err != nil {
+		http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	var currentSubs string
+	err = db.QueryRow("SELECT `subscriptions` FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&currentSubs)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Обновляем список фотографий
+	if currentSubs == "0" || currentSubs == "" { // Если нет фото, заменяем "0" или пустое значение на ID новой фотографии
+		currentSubs = fmt.Sprintf("%d", userSubTo)
+	} else {
+		currentSubs = fmt.Sprintf("%s,%d", currentSubs, userSubTo)
+	}
+
+	// Обновляем запись в таблице all_users
+	_, err = db.Exec("UPDATE `all_users` SET `subscriptions` = ? WHERE `id` = ?", currentSubs, currentUserID)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+	//add follower
+	var userSubToFollowers string
+	err = db.QueryRow("SELECT `followers` FROM `all_users` WHERE `id` = ?", userSubTo).Scan(&userSubToFollowers)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Обновляем список фотографий
+	if userSubToFollowers == "0" || userSubToFollowers == "" { // Если нет фото, заменяем "0" или пустое значение на ID новой фотографии
+		userSubToFollowers = fmt.Sprintf("%d", currentUserID)
+	} else {
+		userSubToFollowers = fmt.Sprintf("%s,%d", userSubToFollowers, currentUserID)
+	}
+
+	// Обновляем запись в таблице all_users
+	_, err = db.Exec("UPDATE `all_users` SET `followers` = ? WHERE `id` = ?", userSubToFollowers, userSubTo)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	RedirectUrl := "/profile/" + userIDStr
+	http.Redirect(w, r, RedirectUrl, http.StatusSeeOther)
+
+}
+
 func handleFunc() {
 	rtr := mux.NewRouter()
 
@@ -946,6 +1080,7 @@ func handleFunc() {
 	rtr.HandleFunc("/profile/{user_id:[0-9]+}/changeUserColor", change_color).Methods("POST")
 	rtr.HandleFunc("/profile/{user_id:[0-9]+}", user_profile).Methods("GET")
 	rtr.HandleFunc("/profile/{user_id:[0-9]+}/settings", user_settings).Methods("GET")
+	rtr.HandleFunc("/sub/{user_id:[0-9]+}", new_sub).Methods("POST")
 	rtr.HandleFunc("/log_user", logUser).Methods("GET") // Новый маршрут
 	rtr.HandleFunc("/photo/{photoID:[0-9]+}", servePhoto).Methods("GET")
 	rtr.HandleFunc("/userphoto/{photoID:[0-9]+}", serveUserphoto).Methods("GET")
