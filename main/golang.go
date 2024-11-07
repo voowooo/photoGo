@@ -16,6 +16,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+const port string = ":10000"
+
 type Profile struct {
 	Id, Userphoto                                                     uint16
 	Username, Password, Photos, Description, Subscriptions, Followers string
@@ -1255,7 +1257,7 @@ func handleFunc() {
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(port, nil)
 }
 
 func main() {
