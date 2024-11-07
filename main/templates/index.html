@@ -2,34 +2,84 @@
 {{ template "header" . }}
 
 {{ template "secondHeader" . }}
+{{ if .IsOwner }}
 
-<!-- Отображение пользователей -->
-{{ if .Users }}
-    <div class="user-grid">
-        {{ range .Users }}
-            <a href="/profile/{{ .Id }}">
-                <div class="user" style="background-color: rgb({{ .Color }});">
-                    <div class="index-user-block">
-                        <img src="{{ .UserphotoURL }}" alt="User Photo" class="index-userphoto">
-                    </div>
-                    <div class="index-user-block">
-                        <h1>{{ .Username }}</h1>
-                        <!-- <h2>Id = {{ .Id }}</h2> -->
-                        <!-- <h3>Photos: {{ .Photos }}</h3> -->
-                        <!-- <h3>{{ .Description }}</h3> -->
-                    </div>
-                    <!-- <a href="/profile/{{ .Id }}" class="user-button">перейти на страницу пользователя</a> -->
+
+
+
+    <div class="index-user user" style="background-color: rgb({{ .Color }});">
+        <div class="index-user-block">
+            <img src="{{ .UserphotoURL }}" alt="User Photo" class="index-userphoto">
+        </div>
+        <div class="index-user-block">
+            <h1 onclick="show('shareUserCard')" style="cursor: pointer;">{{ .Username }}</h1>
+            <div class="shareUserCard" id="shareUserCard"> 
+                <div class="shareUserCard-buttons">
+                    <img src="../static/icons/photo-div_close-icon.png" alt="close" onclick="closeShareUserCard()" class="photo-body-close-btn">
                 </div>
-            </a>
-        {{ else }}
-            <h1>пользователей не найдено</h1>
-        {{ end }}
+                <div class="shareUserCard-body" style="background-color: rgb({{ .Color }});">
+                    <img src="{{ .UserphotoURL }}" alt="profile_page-icon" class="shareUserCard-userphoto">
+                    <h1>{{ .Username }}</h1>
+                    <h2>ID: {{ .Id }}</h2>
+                </div>
+            </div>
+            <h2>Id = {{ .Id }}</h2>
+            <!-- <h3>Photos: {{ .Photos }}</h3> -->
+            <!-- <h3>{{ .Description }}</h3> -->
+        </div>
+        <div class="index-user-subs">
+            {{ if .Followers }}
+                <h2 onclick="showFullFollowers()" style="cursor: pointer;">Подписчики: {{ len .Followers }}</h2>
+            {{ end }}
+
+            {{ if .Subs }}
+                <h2 onclick="showFullSubs()" style="cursor: pointer;">Подписки: {{ len .Subs }}</h2>
+            {{ end }}
+        </div>
+        <!-- <a href="/profile/{{ .Id }}" class="user-button">перейти на страницу пользователя</a> -->
     </div>
+
+    <div class="AllSubs" id="AllFollowers" onclick="document.getElementById('AllFollowers').style.display = 'none';">
+        <div class="AllSubs-body">
+            <h1>Подписчики:</h1>
+            <div class="AllSubs-body-column" id="AllSubsBodyColumn">
+                {{ range .Followers }}
+                    {{ . }}
+                {{ else }}
+                    <!-- <h3>Подписчиков нет</h3> -->
+                {{ end }}
+            </div>
+        </div>
+    </div>
+
+    <div class="AllSubs" id="AllSubs" onclick="document.getElementById('AllSubs').style.display = 'none';">
+        <div class="AllSubs-body">
+            <h1>Подписки:</h1>
+            <div class="AllSubs-body-column" id="AllSubsBodyColumn">
+                {{ range .Subs }}
+                    {{ . }}
+                {{ else }}
+                    <!-- <h3>Подписок нет</h3> -->
+                {{ end }}
+            </div>
+        </div>
+    </div>
+
+    <div class="index-profile-roots profile-roots">
+        <a href="/create">
+            <img src="../static/icons/create_photo-icon.png" alt="create_photo" class="profile-roots-icon">
+        </a>
+        <!-- <a href="/logout" class="profile-roots-button">Выйти</a> -->
+        <a href="profile/{{ .Id }}/settings">
+            <img src="../static/icons/user_settings-icon.png" alt="settings" class="profile-roots-icon">
+        </a>
+    </div>
+    
+
+
+
+
 {{ else }}
-    <h1>пользователей не найдено</h1>
 {{ end }}
-
-<!-- <a href="/profile/{{ .LoggedUserId }}">{{ .LoggedUserId }}</a> -->
-
 {{ template "footer" }}
 {{ end }}

@@ -1075,6 +1075,15 @@ h2{
 .profile-sub{
     display: flex;
     width: fit-content;
+    background-color: var(--user-background);
+    color: var(--user-color);
+    align-items: center;
+    align-self: center;
+    padding: 10px;
+    border-radius: 40px;
+    transition: 0.3s;
+    margin-top: 20px;
+    width: 400px;
 }
 
 .profile-sub:hover{
@@ -1103,9 +1112,39 @@ h2{
     border-radius: 20px;
     width: 500px;
     z-index: 21;
+    max-height: 700px;
 }
 
 .AllSubs-body-column{
     display: flex;
     flex-flow: column-reverse;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.index-profile-roots{
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    align-self: center;
+    margin-top: 0;
+}
+
+.index-user{
+    width: 930px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    position: relative;
+}
+
+.index-user:hover{
+    opacity: 100%;
+}
+
+.index-user-subs{
+    position: absolute;
+    right: 10px;
+    align-self: center;
+    display: flex;
+    flex-flow: column;
+    text-align: right;
 }

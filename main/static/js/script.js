@@ -105,7 +105,7 @@ function checkHeaderY(){
     const SH = document.getElementById('SH');
     let pageOffset = window.pageYOffset;
 
-    if(pageOffset > 100){
+    if(pageOffset > 30){
         // SH.style.pointerEvents = "all";
         // SH.style.opacity = "100%";
         header.classList.add('header-wrapp');
@@ -290,10 +290,12 @@ function FullPhoto(imgData) {
 
 function showFullSubs(){
     document.getElementById('AllSubs').style.display = "flex";
+    document.getElementById('AllSubsBodyColumn').scroll = 0;
 }
 
 function showFullFollowers(){
     document.getElementById('AllFollowers').style.display = "flex";
+    document.getElementById('AllSubsBodyColumn').scroll = 0;
 }
 
 

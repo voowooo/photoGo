@@ -46,7 +46,7 @@
             <div class="AllSubs" id="AllFollowers" onclick="document.getElementById('AllFollowers').style.display = 'none';">
                 <div class="AllSubs-body">
                     <h1>Подписчики:</h1>
-                    <div class="AllSubs-body-column">
+                    <div class="AllSubs-body-column" id="AllSubsBodyColumn">
                         {{ range .Followers }}
                             {{ . }}
                         {{ else }}
@@ -63,7 +63,7 @@
             <div class="AllSubs" id="AllSubs" onclick="document.getElementById('AllSubs').style.display = 'none';">
                 <div class="AllSubs-body">
                     <h1>Подписки:</h1>
-                    <div class="AllSubs-body-column">
+                    <div class="AllSubs-body-column" id="AllSubsBodyColumn">
                         {{ range .Names }}
                             {{ . }}
                         {{ else }}
@@ -72,14 +72,18 @@
                     </div>
                 </div>
             </div>
-
-            {{ if .IsOwner }}
-            {{ else }}
-                <form action="/sub/{{ .Id }}" method="post">
-                    <button type="submit" class="profile-subscribe-btn">
-                        <p>Подписаться</p>
-                    </button>
-                </form>
+            {{ if .LoggedUserId }}
+                {{ if .IsIFollow }}
+                {{ else }}
+                    {{ if .IsOwner }}
+                    {{ else }}
+                        <form action="/sub/{{ .Id }}" method="post">
+                            <button type="submit" class="profile-subscribe-btn">
+                                <p>Подписаться</p>
+                            </button>
+                        </form>
+                    {{ end }}
+                {{ end }}
             {{ end }}
         </div>
     </div>

@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -48,9 +49,92 @@ var showUserPage = Profile{}
 
 // var showUser = Profile{}
 
+func GetFullInfoAboutLoggedUser(w http.ResponseWriter, r *http.Request) (Profile, []string, []string, error) {
+	// Подключение к базе данных
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	if err != nil {
+		return Profile{}, nil, nil, fmt.Errorf("ошибка подключения к базе данных: %w", err)
+	}
+	defer db.Close()
+
+	// Получение ID текущего пользователя из сессии
+	session := GetSession(w, r) // Передаем оба аргумента: w и r
+	currentUserID, ok := session.Values["user_id"].(uint16)
+	if !ok {
+		return Profile{}, nil, nil, fmt.Errorf("не удалось получить ID пользователя из сессии")
+	}
+
+	// Запрос данных пользователя
+	var loggedUser Profile
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).
+		Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto, &loggedUser.Subscriptions, &loggedUser.Followers, &loggedUser.Color)
+	if err != nil {
+		return Profile{}, nil, nil, fmt.Errorf("ошибка при выполнении запроса к базе данных: %w", err)
+	}
+
+	if loggedUser.Userphoto != 0 {
+		loggedUser.UserphotoURL = "/userphoto/" + strconv.Itoa(int(loggedUser.Userphoto))
+	} else {
+		loggedUser.UserphotoURL = "/static/icons/profile_page-icon.png" // URL по умолчанию
+	}
+
+	names := idToNames(loggedUser.Subscriptions)
+	followers := idToNames(loggedUser.Followers)
+
+	return loggedUser, names, followers, nil
+}
+
+// Основной обработчик, который рендерит шаблон
+// Основной обработчик, который рендерит шаблон
 func index(w http.ResponseWriter, r *http.Request) {
-	// Парсинг HTML-шаблонов
+	fmt.Println("index")
+
+	// Парсинг шаблонов
+
+	// Получение данных о текущем пользователе
+	loggedUser, subs, followers, err := GetFullInfoAboutLoggedUser(w, r)
+	if err != nil {
+		http.Error(w, "Ошибка при получении информации о пользователе: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	session := GetSession(w, r)
+	currentUserID, loggedIn := session.Values["user_id"].(uint16)
+
+	isOwner := loggedIn && currentUserID == loggedUser.Id
+
+	data := struct {
+		Profile
+		LoggedUserId       int
+		LoggedUserphotoURL string
+		IsOwner            bool
+		Subs               []string
+		Followers          []string
+	}{
+		Profile:            loggedUser,
+		LoggedUserId:       int(loggedUser.Id),
+		LoggedUserphotoURL: loggedUser.UserphotoURL,
+		IsOwner:            isOwner,
+		Subs:               subs,
+		Followers:          followers,
+	}
+
 	t, err := template.ParseFiles("templates/index.html", "templates/header.html", "templates/footer.html", "templates/secondHeader.html")
+	if err != nil {
+		http.Error(w, "Ошибка при загрузке шаблонов: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Передача данных в шаблон
+	err = t.ExecuteTemplate(w, "index", data)
+	if err != nil {
+		http.Error(w, "Ошибка рендеринга шаблона: "+err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func allusers(w http.ResponseWriter, r *http.Request) {
+	// Парсинг HTML-шаблонов
+	t, err := template.ParseFiles("templates/allusers.html", "templates/header.html", "templates/footer.html", "templates/secondHeader.html")
 	// t, err := template.ParseFiles("templatesNEW/index.html", "templatesNEW/header.html", "templatesNEW/footer.html")
 	if err != nil {
 		http.Error(w, "Ошибка при загрузке шаблонов: "+err.Error(), http.StatusInternalServerError)
@@ -125,7 +209,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Рендеринг шаблона с данными
-	err = t.ExecuteTemplate(w, "index", data)
+	err = t.ExecuteTemplate(w, "allusers", data)
 	if err != nil {
 		http.Error(w, "Ошибка рендеринга шаблона: "+err.Error(), http.StatusInternalServerError)
 	}
@@ -224,6 +308,8 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	fmt.Println(loggedUserID)
+
 	vars := mux.Vars(r)
 	requestedUserID := vars["user_id"]
 
@@ -257,9 +343,14 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
+	isIfollow := isIfollowCheck(loggedUserID, requestedUserID)
+
 	names := idToNames(user.Subscriptions)
 
 	followers := idToNames(user.Followers)
+
+	fmt.Println("isIfollow")
+	fmt.Println(isIfollow)
 
 	var loggedUserphotoURL string
 	LoggedUserphotoID := loggedUser.Userphoto
@@ -294,6 +385,7 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 		LoggedUserphotoURL string
 		Names              []string
 		Followers          []string
+		IsIFollow          int
 	}{
 		Profile:            user,
 		IsOwner:            isOwner,
@@ -303,6 +395,7 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 		LoggedUserphotoURL: loggedUserphotoURL,
 		Names:              names,
 		Followers:          followers,
+		IsIFollow:          isIfollow,
 	}
 
 	t, err := template.ParseFiles("templates/profile.html", "templates/header.html", "templates/secondHeader.html", "templates/footer.html")
@@ -312,6 +405,41 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t.ExecuteTemplate(w, "profile", data)
+}
+
+func isIfollowCheck(me int, req string) int {
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	if err != nil {
+		fmt.Println("Ошибка подключения к базе данных:", err)
+	}
+	defer db.Close() // Закрываем соединение по завершении функции
+
+	var mySubs string
+	err = db.QueryRow("SELECT `subscriptions` FROM `all_users` WHERE `id` = ?", me).Scan(&mySubs)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			fmt.Printf("error")
+		} else {
+			fmt.Println("Ошибка запроса:", err)
+		}
+	}
+
+	parts := strings.Split(mySubs, ",")
+
+	found := false
+	for _, part := range parts {
+		if part == req {
+			found = true
+			break
+		}
+	}
+
+	if found {
+		return 1
+	} else {
+		return 0
+	}
+
 }
 
 func idToNames(ids string) []string {
@@ -339,13 +467,14 @@ func idToNames(ids string) []string {
 	}
 	defer db.Close() // Закрываем соединение по завершении функции
 
-	// Создаем срез для хранения имен
-	names := make([]string, 0, len(numbers))
+	// Создаем срез для хранения имен и фотографий
+	results := make([]string, 0, len(numbers))
 
-	// Выполняем запрос для каждого ID и добавляем имя в срез
+	// Выполняем запрос для каждого ID и добавляем имя и фото в срез
 	for _, id := range numbers {
 		var name string
-		err = db.QueryRow("SELECT `name` FROM `all_users` WHERE `id` = ?", id).Scan(&name)
+		var userphotoID int
+		err = db.QueryRow("SELECT `name`, `userphoto` FROM `all_users` WHERE `id` = ?", id).Scan(&name, &userphotoID)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				fmt.Printf("ID %d не найден в базе данных.\n", id)
@@ -355,14 +484,47 @@ func idToNames(ids string) []string {
 			continue
 		}
 
-		name = "<a href='/profile/" + strconv.Itoa(id) + "' class='profile-sub'>" + "<h2>" + name + "</h2>" + "</a>"
+		// Получаем данные фотографии из таблицы `userphotos`
+		var photoData []byte
+		err = db.QueryRow("SELECT `photo` FROM `userphotos` WHERE `id` = ?", userphotoID).Scan(&photoData)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				fmt.Printf("Фото с ID %d не найдено в таблице userphotos.\n", userphotoID)
+			} else {
+				fmt.Println("Ошибка запроса фотографии:", err)
+			}
+			continue
+		}
 
-		names = append(names, name)
+		// Конвертируем фото в base64 строку
+		photoBase64 := base64.StdEncoding.EncodeToString(photoData)
+		// Создаем строку для тега <img> с base64-кодированной фотографией
+		photoHTML := "data:image/jpeg;base64," + photoBase64
+
+		var subColor string
+		err = db.QueryRow("SELECT `color` FROM `all_users` WHERE `id` = ?", id).Scan(&subColor)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				fmt.Printf("цвет подписчика не найден")
+			} else {
+				fmt.Println("Ошибка запроса цвета:", err)
+			}
+			continue
+		}
+
+		// Создаем HTML-код с ссылкой на профиль и фото
+		profileHTML := "<a href='/profile/" + strconv.Itoa(id) + "' class='profile-sub' style='background-color: rgb(" + subColor + ");'>" +
+			"<img src='" + photoHTML + "' alt='" + name + "' class='user-photo index-userphoto'>" +
+			"<h2>" + name + "</h2>" +
+			"</a>"
+
+		// Добавляем результат в срез
+		results = append(results, profileHTML)
 	}
 
-	// Выводим и возвращаем массив имен
-	fmt.Println(names)
-	return names
+	// Выводим и возвращаем массив результатов
+	// fmt.Println(results)
+	return results
 }
 
 func logUser(w http.ResponseWriter, r *http.Request) {
@@ -552,14 +714,14 @@ func create(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	var user Profile
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto, &user.Color)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&user.Id, &user.Username, &user.Password, &user.Photos, &user.Description, &user.Userphoto, &user.Subscriptions, &user.Followers, &user.Color)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
 	var loggedUser LoggedUserStruct
-	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto, &loggedUser.Color)
+	err = db.QueryRow("SELECT * FROM `all_users` WHERE `id` = ?", currentUserID).Scan(&loggedUser.Id, &loggedUser.Username, &loggedUser.Password, &loggedUser.Photos, &loggedUser.Description, &loggedUser.Userphoto, &user.Subscriptions, &user.Followers, &loggedUser.Color)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -1069,6 +1231,7 @@ func handleFunc() {
 	rtr := mux.NewRouter()
 
 	rtr.HandleFunc("/", index).Methods("GET")
+	rtr.HandleFunc("/allusers", allusers).Methods("GET")
 	rtr.HandleFunc("/register", register).Methods("GET")
 	rtr.HandleFunc("/login", login).Methods("GET", "POST")
 	rtr.HandleFunc("/logout", logout).Methods("GET")
