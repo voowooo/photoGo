@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"text/template"
@@ -15,8 +16,6 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 )
-
-const port string = ":10000"
 
 type Profile struct {
 	Id, Userphoto                                                     uint16
@@ -1257,7 +1256,12 @@ func handleFunc() {
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
-	http.ListenAndServe(port, nil)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "10000"
+	}
+
+	http.ListenAndServe(":"+port, nil)
 }
 
 func main() {
