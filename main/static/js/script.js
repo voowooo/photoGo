@@ -110,24 +110,18 @@ function checkHeaderY(){
         // SH.style.opacity = "100%";
         header.classList.add('header-wrapp');
         let scrollDir = '';
-        if(window.location.href.includes("/profile") && pageOffset < 200){
-            const profileElement = document.getElementById('profile');
+        // if(window.location.href.includes("/profile") && pageOffset < 200){
+        //     const profileElement = document.getElementById('profile');
 
-            // Получаем позицию элемента profile относительно документа и его высоту
-            const profileBottom = profileElement.getBoundingClientRect().bottom + window.pageYOffset;
+        //     // Получаем позицию элемента profile относительно документа и его высоту
+        //     const profileBottom = profileElement.getBoundingClientRect().bottom + window.pageYOffset;
 
-            // Прокручиваем страницу до позиции, где элемент profile будет скрыт (вне видимой области)
-            window.scrollTo({
-                top: profileBottom - 90,
-                behavior: 'smooth' // Плавная прокрутка
-            });
-
-            // window.scroll({ 
-            //     top: 430,
-            //     left: 0,
-            //     behavior: 'smooth' // Это как катание на круизном лайнере 🛥️
-            // });
-        }
+        //     // Прокручиваем страницу до позиции, где элемент profile будет скрыт (вне видимой области)
+        //     window.scrollTo({
+        //         top: profileBottom - 90,
+        //         behavior: 'smooth' // Плавная прокрутка
+        //     });
+        // }
     }else{
         // SH.style.opacity = "0%";
         // SH.style.pointerEvents = "none";
@@ -234,7 +228,8 @@ function shareUserCardDirection(){
 
 function FullPhoto(imgData) {
     console.log("Полное изображение:", imgData);
-    let newUrl = 'http://localhost:8080/fullphoto' + imgData;
+    let newUrl = 'http://192.168.56.214:8080/fullphoto' + imgData;
+    // let newUrl = 'http://localhost:8080/fullphoto' + imgData;
 
     let comments = "";
 
@@ -335,3 +330,6 @@ function showFullFollowers(){
 //         );
 //     }
 // }
+
+
+

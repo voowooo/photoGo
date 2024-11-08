@@ -10,7 +10,12 @@
 
 <div class="profile" id="profile">
     <div class="profile-line">
-        <img src="{{ .UserphotoURL }}" alt="profile_page-icon" class="profile_page-icon">
+        <img src="{{ .UserphotoURL }}" alt="profile_page-icon" class="profile_page-icon profile_page-icon-pc">
+        <div class="profile-left-part-mobile">
+            <img src="{{ .UserphotoURL }}" alt="profile_page-icon" class="profile_page-icon">
+            <h2 class="profile-block-description">О себе:</h2>
+            <h3 class="profile-block-description-text">{{ .Description }} </h3>
+        </div>
         <div class="profile-block">
             <h1 onclick="show('shareUserCard')" style="cursor: pointer;">{{ .Username }}</h1>
             <div class="shareUserCard" id="shareUserCard"> 
@@ -35,8 +40,8 @@
                 <h2>ID: {{ .Id }}</h2>
                 <!-- <h2 style="margin-left: 20px;">Фото: {{ .Photos }}</h2> -->
             </div>
-            <h2 class="profile-block-description">О себе:</h2>
-            <h3 class="profile-block-description-text">{{ .Description }} </h3>
+            <h2 class="profile-block-description profile-block-description-text-pc">О себе:</h2>
+            <h3 class="profile-block-description-text profile-block-description-text-pc">{{ .Description }} </h3>
             <!-- <h2>Подписчики: {{ .Followers }}</h2> -->
             <!-- <h2>Подписки: {{ .Names }} </h2> -->
             {{ if .Followers }}

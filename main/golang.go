@@ -95,7 +95,8 @@ func index(w http.ResponseWriter, r *http.Request) {
 	// Получение данных о текущем пользователе
 	loggedUser, subs, followers, err := GetFullInfoAboutLoggedUser(w, r)
 	if err != nil {
-		http.Error(w, "Ошибка при получении информации о пользователе: "+err.Error(), http.StatusInternalServerError)
+		// http.Error(w, "Ошибка при получении информации о пользователе: "+err.Error(), http.StatusInternalServerError)
+		http.Redirect(w, r, "/allusers", http.StatusSeeOther)
 		return
 	}
 
@@ -1258,10 +1259,12 @@ func handleFunc() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "10000"
+		port = "8080"
 	}
+	fmt.Println(port)
 
-	http.ListenAndServe(":"+port, nil)
+	http.ListenAndServe("192.168.56.214:8080", nil)
+	// http.ListenAndServe(":"+port, nil)
 }
 
 func main() {

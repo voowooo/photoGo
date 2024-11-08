@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PhotoGo</title>
+    <link rel="stylesheet" href="/static/css/mobile.css">
     <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/mobile.css">
     <link rel="stylesheet" href="/static/css/colors.css">
     <link rel="stylesheet" href="/static/css/variables.css">
     <link rel="stylesheet" href="/static/css/NEWvariables.css">
@@ -20,21 +22,27 @@
                 <a href="/" class="header-menu-element">
                     <img src="/static/icons/home_page-icon.png" alt="home" class="header-menu-icon">
                 </a>
-                <a href="/search" class="header-menu-element">
+                <!-- <a href="/search" class="header-menu-element">
                     <img src="/static/icons/search_page-icon.png" alt="search" class="header-menu-icon">
-                </a>
+                </a> -->
                 <a href="/allusers" class="header-menu-element">
                     <img src="/static/icons/users-icon.png" alt="allusers" class="header-menu-icon">
                 </a>
             {{ end }}
             
             {{ if not .LoggedUserId }}
-                <a href="/login" class="header-menu-element">
-                    <h1 class="header-menu-text">Войти</h1>
-                </a>
-                <a href="/register" class="header-menu-element">
-                    <h1 class="header-menu-text">Зарегистрироваться</h1>
-                </a>
+                <div class="header-notlogged-btns-div">
+                    <a href="/login" class="header-menu-element">
+                        <h1 class="header-menu-text">Войти</h1>
+                    </a>
+                    <a href="/register" class=" header-menu-element-reg-btn header-menu-element">
+                        <h1 class="header-menu-text">Зарегистрироваться</h1>
+                    </a>
+                    <div class="horizontal-line"></div>
+                    <a href="/register" class=" header-menu-element-reg-btn-true header-menu-element">
+                        <h1 class="header-menu-text">Нет аккаунта</h1>
+                    </a>
+                </div>
             {{ end }}
             {{ if .LoggedUserId }}
                 <a href="/profile/{{ .LoggedUserId }}" class="header-menu-element"> 

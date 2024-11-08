@@ -6,15 +6,18 @@
 
     {{ if .IsOwner }}
         <div class="settings-center">
-            <h1>Здравствуй {{ .Username }}👋, это твои настройки⚙️</h1>
-            <div class="settings-line">
+            <h1>Здравствуй <wbr>{{ .Username }}👋, <wbr>это твои настройки⚙️</h1>
+            <div class="horizontal-line"></div>
+            <div class="settings-password-mobile settings-line">
                 <h2 data-lang="settings_showPassword">Ваш пароль:</h2>
                 <h2 class="settings-center-button" onclick="settingsShowPass()" id="settings-password-button">показать пароль</h2>
                 <h2 class="settings-password" id="settings-password">{{ .Password }}</h2>
                 <!-- <h2 class="settings-center-button" onclick="console.log('cliked')" id="settings-password">показать пароль</h2> -->
             </div>
+            <div class="horizontal-line"></div>
             <h2>Ваш Id: {{ .Id }}</h2>
         </div>
+        <div class="horizontal-line"></div>
         <!-- <h3>Photos: {{ .Photos }}</h3> -->
         <div class="settings-blocks">
             <div class="settings-block">
@@ -23,10 +26,11 @@
                     <!-- <input type="text" name="description" id="description" placeholder="Описание профиля" class="signin-form-input"> -->
                     <textarea name="description" id="description" placeholder="Описание профиля" class="settings-description-textarea" maxlength="500" rows="4">{{ .Description }}</textarea>
                     <div class="settings-description-button-line">
-                        <button class="signin-form-button">изменить</button>
+                        <button class="change_desc-button signin-form-button">изменить</button>
                     </div>
                 </form>
             </div>
+            <div class="horizontal-line"></div>
             <div class="settings-block">
                 <h1>Внешний вид профиля🎨</h1>
                 <form action="addUserphoto" method="post" enctype="multipart/form-data" class="settings-block-form">
@@ -35,7 +39,7 @@
                             <img src="{{ .LoggedUserphotoURL }}" alt="profile_page-icon" class="settings-profile_page-icon">
                             <h2 style="color: black;">{{ .Username }}</h2>
                         </div>
-                        <div class="column">
+                        <div class="line column">
                             <label for="input_userphoto" class="userphoto_label" style="margin-bottom: 10px;">Новое фото</label>
                             <label class="userphoto_label" onclick="show('settingsColor')">Изменить цвет</label>
                         </div>
@@ -81,7 +85,7 @@
                     </div>
                     <div class="settings-color-body-block">
                         <h2>Предпросмотр</h2>
-                        <div class="user" style="width: 400px;" id="settingsColorPickerUserCard" style="background-color: rgb({{ .Color }});">
+                        <div class="user user-color-prev" id="settingsColorPickerUserCard" style="background-color: rgb({{ .Color }});">
                             <div class="index-user-block">
                                 <img src="{{ .LoggedUserphotoURL }}" alt="User Photo" class="index-userphoto">
                             </div>
