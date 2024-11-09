@@ -514,11 +514,56 @@ func idToNames(ids string) []string {
 			continue
 		}
 
+		var SubPhotos string
+		err = db.QueryRow("SELECT `photos` FROM `all_users` WHERE `id` = ?", id).Scan(&SubPhotos)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				fmt.Printf("фото %d не найдены в базе данных.\n", id)
+			} else {
+				fmt.Println("Ошибка запроса:", err)
+			}
+			continue
+		}
+
+		// Разделяем `SubPhotos`, чтобы получить список ID фотографий
+		SubPhotosIds := strings.Split(SubPhotos, ",")
+
+		photoLink := make([]string, 0, len(SubPhotosIds))
+
+		// Если фото три или меньше, добавляем их все, пропуская нулевые
+		if len(SubPhotosIds) <= 3 {
+			for _, photoID := range SubPhotosIds {
+				if photoID != "0" && photoID != "" { // Пропускаем нулевые и пустые ID
+					photoLink = append(photoLink, "<img src='http://192.168.56.214:8080/photo/"+photoID+"' class='index-sub-last-photos'>")
+				}
+			}
+		} else {
+			// Если больше трёх фото, выбираем последние три, пропуская нулевые
+			SubPhotosIds = SubPhotosIds[len(SubPhotosIds)-3:]
+			for _, photoID := range SubPhotosIds {
+				if photoID != "0" && photoID != "" { // Пропускаем нулевые и пустые ID
+					photoLink = append(photoLink, "<img src='http://192.168.56.214:8080/photo/"+photoID+"' class='index-sub-last-photos'>")
+				}
+			}
+		}
+
+		var photosHTML string
+		if len(photoLink) == 0 {
+			photosHTML = "<p>Нет фото</p>" // Сообщение, если фото нет
+		} else {
+			photosHTML = strings.Join(photoLink, "") // Объединяем фото без разделителя
+		}
+
 		// Создаем HTML-код с ссылкой на профиль и фото
-		profileHTML := "<a href='/profile/" + strconv.Itoa(id) + "' class='profile-sub' style='background-color: rgb(" + subColor + ");'>" +
+		profileHTML := "<div>" +
+			"<a href='/profile/" + strconv.Itoa(id) + "' class='profile-sub' style='background-color: rgb(" + subColor + ");'>" +
 			"<img src='" + photoHTML + "' alt='" + name + "' class='user-photo index-userphoto'>" +
 			"<h2>" + name + "</h2>" +
-			"</a>"
+			"</a>" +
+			"<div class='index-prev-photos' style='background-color: rgb(" + subColor + ");'>" +
+			photosHTML +
+			"</div>" +
+			"</div>"
 
 		// Добавляем результат в срез
 		results = append(results, profileHTML)

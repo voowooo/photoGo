@@ -1,0 +1,35 @@
+.index-subscriptions-block{
+    .profile-sub{
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        min-width: 47%;
+        margin: 0 10px 0;
+        scroll-snap-align: start;
+    }
+}
+
+.index-sub-last-photos{
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.index-prev-photos{
+    min-width: 47%;
+    min-height: 110px;
+    color: black;
+    font-weight: 500;
+    font-size: 20px;
+    background-color: rgb(207, 207, 207);
+    margin: 0 10px 0;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    /* grid-auto-rows: 400px; Задаёт высоту каждой строки */
+    gap: 10px; /* Промежуток между изображениями */
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 10px;
+}

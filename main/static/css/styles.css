@@ -1166,3 +1166,22 @@ h2{
     flex-flow: column;
     text-align: right;
 }
+
+.index-subscriptions-block{
+    align-self: center;
+    width: 80%;
+    margin-top: 20px;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+}
+
+.index-prev-photos{
+    display: none;
+}
+
+.AllSubs-body{
+    .index-prev-photos{
+        display: none;
+    }
+}

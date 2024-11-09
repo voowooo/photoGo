@@ -6,7 +6,7 @@
 
 
 
-
+    <link rel="stylesheet" href="/static/css/indexStyles.css">
     <div class="index-user user" style="background-color: rgb({{ .Color }});">
         <div class="index-user-block">
             <img src="{{ .UserphotoURL }}" alt="User Photo" class="index-userphoto">
@@ -74,8 +74,16 @@
             <img src="../static/icons/user_settings-icon.png" alt="settings" class="profile-roots-icon">
         </a>
     </div>
-    
 
+    <h1 style="align-self: center; margin-top: 30px;">Твои подписки</h1>
+    
+    <div class="index-subscriptions-block">
+        {{ range .Subs }}
+            {{ . }}
+        {{ else }}
+            <!-- <h3>Подписок нет</h3> -->
+        {{ end }}
+    </div>
 
 
 
