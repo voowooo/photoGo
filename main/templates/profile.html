@@ -129,13 +129,15 @@
 <div class="photo-div" id="photoDIV">
     <div class="photo-body">
         <img src="../static/icons/photo-div_close-icon.png" alt="close" onclick="closePhotoDiv()" class="photo-body-close-btn">
-        <img src="" alt="PHOTO" id="photoIMG" class="photo-body-img">
+        <div class="photo-body-img-container">
+            <img src="" alt="PHOTO" id="photoIMG" class="photo-body-img">
+        </div>
         <div class="photo-body-block" id="photo-body-block">
             <h2>Автор</h2>
-            <div class="photo-body-user-card" style="background-color: rgb({{ .Color }})">
+            <div class="photo-body-user-card" style="background-color: rgb({{ .Color }})" id="stickyElement">
                 <div class="line center-line">
                     <img src="{{ .UserphotoURL }}" alt="profile_page-icon" class="settings-profile_page-icon">
-                    <h1 style="color: black;">{{ .Username }}</h1>
+                    <h1 style="color: black;" >{{ .Username }}</h1>
                 </div>
             </div>
             <div class="photo-body-block-comments">

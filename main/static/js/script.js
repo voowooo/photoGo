@@ -333,3 +333,20 @@ function showFullFollowers(){
 
 
 
+
+
+document.getElementById("photo-body-block").addEventListener("scroll", function() {
+    const stickyElement = document.getElementById("stickyElement");
+    const container = document.getElementById("photo-body-block");
+  
+    // Получаем положение контейнера и элемента относительно окна
+    const containerRect = container.getBoundingClientRect();
+    const stickyRect = stickyElement.getBoundingClientRect();
+  
+    // Проверяем, достиг ли элемент позиции "липкости" внутри контейнера
+    if (stickyRect.top <= containerRect.top + 10) {
+      stickyElement.classList.add("stuck"); // Добавляем класс, когда элемент "прилипает"
+    } else {
+      stickyElement.classList.remove("stuck"); // Убираем класс, если элемент больше не прилипает
+    }
+});

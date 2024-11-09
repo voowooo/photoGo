@@ -467,10 +467,16 @@ h2{
     margin-top: 20px;
     justify-content: center;
     grid-template-columns: repeat(2, 600px); /* Создаёт 3 равные колонки */
+    grid-template-rows: repeat(1, auto);
     /* grid-auto-rows: 400px; Задаёт высоту каждой строки */
     gap: 10px; /* Промежуток между изображениями */
     row-gap: 60px;
+    
 
+}
+
+.horizontal-line{
+    display: none;
 }
 
 .settings-input-file{
