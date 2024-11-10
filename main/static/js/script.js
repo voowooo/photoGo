@@ -63,7 +63,7 @@ function checkPass() {
         } else {
             document.getElementById('passwordIncorrect').style.display = "none";
             document.getElementById('regButton').style.display = "";
-            document.getElementById('password').style.borderBottom = "0";
+            document.getElementById('password').style.borderBottom = "2px solid white";
         }
     }
 }
@@ -335,18 +335,18 @@ function showFullFollowers(){
 
 
 
-document.getElementById("photo-body-block").addEventListener("scroll", function() {
-    const stickyElement = document.getElementById("stickyElement");
-    const container = document.getElementById("photo-body-block");
+// document.getElementById("photo-body-block").addEventListener("scroll", function() {
+//     const stickyElement = document.getElementById("stickyElement");
+//     const container = document.getElementById("photo-body-block");
   
-    // Получаем положение контейнера и элемента относительно окна
-    const containerRect = container.getBoundingClientRect();
-    const stickyRect = stickyElement.getBoundingClientRect();
+//     // Получаем положение контейнера и элемента относительно окна
+//     const containerRect = container.getBoundingClientRect();
+//     const stickyRect = stickyElement.getBoundingClientRect();
   
-    // Проверяем, достиг ли элемент позиции "липкости" внутри контейнера
-    if (stickyRect.top <= containerRect.top + 10) {
-      stickyElement.classList.add("stuck"); // Добавляем класс, когда элемент "прилипает"
-    } else {
-      stickyElement.classList.remove("stuck"); // Убираем класс, если элемент больше не прилипает
-    }
-});
+//     // Проверяем, достиг ли элемент позиции "липкости" внутри контейнера
+//     if (stickyRect.top <= containerRect.top + 10) {
+//       stickyElement.classList.add("stuck"); // Добавляем класс, когда элемент "прилипает"
+//     } else {
+//       stickyElement.classList.remove("stuck"); // Убираем класс, если элемент больше не прилипает
+//     }
+// });

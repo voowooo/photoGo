@@ -153,8 +153,48 @@ h2{
 
 }
 
+.field{
+    position: relative;
+    display: flex;
+}
+
+.field-label{
+    position: absolute;
+    top: 31%;
+    left: 3%;
+    transition: 0.3s;
+    font-size: 24px;
+    font-weight: 700;
+    cursor:text;
+} 
+
 .signin-form-input{
     width: 90%;
+    background-color: rgba(255, 255, 255, 0);
+    color: white;
+    border: 0;
+    border-bottom: 2px solid white;
+    border-radius: 0;
+    text-align: center;
+    height: 30px;
+    font-size: 20px;
+    padding: 5px;
+    transition: 0.3s;
+    margin: 10px;
+}
+
+.signin-form-input:focus{
+    border-radius: 30px;
+    background-color: rgba(255, 255, 255, 0.643);
+    border-radius: 15px;
+}
+
+.signin-form-input:not(:placeholder-shown) + .field-label{
+    top: -30%;
+}
+
+.signin-form-password-input{
+    width: 100%;
     background-color: rgba(255, 255, 255, 0);
     color: white;
     border: 0;
@@ -164,10 +204,10 @@ h2{
     padding: 5px;
     border-radius: 15px;
     transition: 0.3s;
-    margin: 10px;
+    /* margin: 10px; */
 }
 
-.signin-form-input:focus{
+.signin-form-password-input:focus{
     border-radius: 30px;
     background-color: rgba(255, 255, 255, 0.643);
 }
@@ -554,44 +594,25 @@ h2{
 
 .password-line{
     position: relative;
-    width: 90%;
+    /* width: 90%; */
     background-color: rgba(255, 255, 255, 0);
     color: white;
     border: 0;
     text-align: center;
     /* height: 30px; */
-    font-size: 20px;
+    /* font-size: 20px; */
     /* padding: 5px; */
-    border-radius: 15px;
+    /* border-radius: 15px; */
     transition: 0.3s;
-    margin: 10px;
+    /* margin: 10px; */
 }
 
 .signin-showpass{
     position: absolute;
     right: 10px;
-    top: 5px;
+    top: 25%;
     height: 30px;
     filter: invert(1);
-}
-
-.signin-form-password-input{
-    width: 100%;
-    background-color: rgba(255, 255, 255, 0);
-    color: white;
-    border: 0;
-    text-align: center;
-    height: 30px;
-    font-size: 20px;
-    padding: 5px;
-    border-radius: 15px;
-    transition: 0.3s;
-    /* margin: 10px; */
-}
-
-.signin-form-password-input:focus{
-    border-radius: 30px;
-    background-color: rgba(255, 255, 255, 0.643);
 }
 
 .line{
@@ -1138,6 +1159,7 @@ h2{
     flex-flow: column-reverse;
     overflow-y: scroll;
     overflow-x: hidden;
+    overscroll-behavior: none;
 }
 
 .index-profile-roots{

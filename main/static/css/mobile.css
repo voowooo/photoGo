@@ -177,16 +177,31 @@ h2{
 
 }
 
+.field{
+    position: relative;
+    display: flex;
+}
+
+.field-label{
+    position: absolute;
+    top: 31%;
+    left: 3%;
+    transition: 0.3s;
+    font-size: 24px;
+    font-weight: 700;
+    cursor:text;
+} 
+
 .signin-form-input{
     width: 98%;
     background-color: rgba(255, 255, 255, 0);
     color: white;
     border: 0;
+    border-bottom: 2px solid white;
     text-align: center;
     height: 30px;
     font-size: 20px;
     padding: 5px;
-    border-radius: 15px;
     transition: 0.3s;
     margin: 10px;
 }
@@ -194,6 +209,10 @@ h2{
 .signin-form-input:focus{
     border-radius: 30px;
     background-color: rgba(255, 255, 255, 0.643);
+}
+
+.signin-form-input:not(:placeholder-shown) + .field-label{
+    top: -30%;
 }
 
 .signin-form-button{
@@ -621,23 +640,23 @@ h2{
 
 .password-line{
     position: relative;
-    width: 90%;
+    /* width: 90%; */
     background-color: rgba(255, 255, 255, 0);
     color: white;
     border: 0;
     text-align: center;
     /* height: 30px; */
-    font-size: 20px;
+    /* font-size: 20px; */
     /* padding: 5px; */
-    border-radius: 15px;
+    /* border-radius: 15px; */
     transition: 0.3s;
-    margin: 10px;
+    /* margin: 10px; */
 }
 
 .signin-showpass{
     position: absolute;
-    right: 10px;
-    top: 5px;
+    right: 0px;
+    top: 25%;
     height: 30px;
     filter: invert(1);
 }
