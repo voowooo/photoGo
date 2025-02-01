@@ -52,7 +52,7 @@ var showUserPage = Profile{}
 
 func GetFullInfoAboutLoggedUser(w http.ResponseWriter, r *http.Request) (Profile, []string, []string, error) {
 	// Подключение к базе данных
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		return Profile{}, nil, nil, fmt.Errorf("ошибка подключения к базе данных: %w", err)
 	}
@@ -148,7 +148,7 @@ func allusers(w http.ResponseWriter, r *http.Request) {
 	currentUserID, ok := session.Values["user_id"].(uint16)
 
 	// Подключение к базе данных
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		http.Error(w, "Ошибка подключения к базе данных: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -234,7 +234,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 
-		db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+		db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 		if err != nil {
 			panic(err)
 		}
@@ -283,7 +283,7 @@ func reg_user(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(username + password)
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		panic(err)
 	}
@@ -315,7 +315,7 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	requestedUserID := vars["user_id"]
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		panic(err)
 	}
@@ -410,7 +410,7 @@ func user_profile(w http.ResponseWriter, r *http.Request) {
 }
 
 func isIfollowCheck(me int, req string) int {
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		fmt.Println("Ошибка подключения к базе данных:", err)
 	}
@@ -462,7 +462,7 @@ func idToNames(ids string) []string {
 	}
 
 	// Подключаемся к базе данных
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		fmt.Println("Ошибка подключения к базе данных:", err)
 		return nil
@@ -534,7 +534,8 @@ func idToNames(ids string) []string {
 		if len(SubPhotosIds) <= 3 {
 			for _, photoID := range SubPhotosIds {
 				if photoID != "0" && photoID != "" { // Пропускаем нулевые и пустые ID
-					photoLink = append(photoLink, "<img src='http://192.168.56.214:8080/photo/"+photoID+"' class='index-sub-last-photos'>")
+					// photoLink = append(photoLink, "<img src='http://192.168.56.214:8080/photo/"+photoID+"' class='index-sub-last-photos'>")
+					photoLink = append(photoLink, "<img src='/photo/"+photoID+"' class='index-sub-last-photos'>")
 				}
 			}
 		} else {
@@ -542,7 +543,7 @@ func idToNames(ids string) []string {
 			SubPhotosIds = SubPhotosIds[len(SubPhotosIds)-3:]
 			for _, photoID := range SubPhotosIds {
 				if photoID != "0" && photoID != "" { // Пропускаем нулевые и пустые ID
-					photoLink = append(photoLink, "<img src='http://192.168.56.214:8080/photo/"+photoID+"' class='index-sub-last-photos'>")
+					photoLink = append(photoLink, "<img src='/photo/"+photoID+"' class='index-sub-last-photos'>")
 				}
 			}
 		}
@@ -578,7 +579,7 @@ func logUser(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
 	password := r.URL.Query().Get("password")
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		panic(err)
 	}
@@ -613,7 +614,7 @@ func user_settings(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	requestedUserID := vars["user_id"]
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		panic(err)
 	}
@@ -672,7 +673,7 @@ func servePhoto(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	photoID := vars["photoID"]
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
@@ -695,7 +696,7 @@ func change_color(w http.ResponseWriter, r *http.Request) {
 	Color := r.FormValue("pickedColor")
 	Id := vars["user_id"]
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		panic(err)
 	}
@@ -723,7 +724,7 @@ func change_desc(w http.ResponseWriter, r *http.Request) {
 	description := r.FormValue("description")
 	Id := vars["user_id"]
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		panic(err)
 	}
@@ -754,7 +755,7 @@ func create(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Print(currentUserID)
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		panic(err)
 	}
@@ -838,7 +839,7 @@ func createPhoto(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Подключение к БД
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		panic(err)
 	}
@@ -910,7 +911,7 @@ func addUserphoto(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Подключение к БД
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		panic(err)
 	}
@@ -960,7 +961,7 @@ func serveUserphoto(w http.ResponseWriter, r *http.Request) {
 
 	// fmt.Println(photoID)
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
@@ -988,7 +989,7 @@ func deleteAccount(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Текущий пользователь ID:", currentUserID)
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
 		return
@@ -1025,7 +1026,7 @@ func addComment(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(content)
 	fmt.Println(owner)
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
@@ -1101,7 +1102,7 @@ func fullPhoto(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Photo ID:", photoID)
 	}
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
 		return
@@ -1220,7 +1221,7 @@ func new_sub(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("User ID from URL: %d\n", userSubTo)
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/golang")
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:8889)/photogo")
 	if err != nil {
 		http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
 		return
@@ -1308,8 +1309,10 @@ func handleFunc() {
 	}
 	fmt.Println(port)
 
-	http.ListenAndServe("192.168.56.214:8080", nil)
-	// http.ListenAndServe(":"+port, nil)
+	// http.ListenAndServe("192.168.56.214:8080", nil)
+	// http.ListenAndServe("134.17.129.247:" + port, nil)
+	
+	http.ListenAndServe(":"+port, nil)
 }
 
 func main() {
